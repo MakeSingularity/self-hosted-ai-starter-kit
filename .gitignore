@@ -80,4 +80,6 @@ package-lock.json
 error.log
 debug.log
 crash.log
-*.tmp
+
+# VS Code workspace settings (optional)
+# .vscode/

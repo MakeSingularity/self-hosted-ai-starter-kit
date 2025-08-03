@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
 """
-NVIDIA Riva Client Integration Example
+NVIDIA Riva Client Integration Example - OPTIONAL
 
-This script demonstrates how to integrate NVIDIA Riva speech services 
-with the n8n AI starter kit.
+⚠️  This is an OPTIONAL example that requires NVIDIA Riva packages.
+    VS Code may show import errors - this is normal if packages aren't installed.
+    
+    The main API server (api_server.py) works without these dependencies.
+    For speech features that work with/without Riva, use hybrid_speech_api.py
 
 Features:
 - Automatic Speech Recognition (ASR)
-- Text-to-Speech (TTS)
+- Text-to-Speech (TTS)  
 - Natural Language Processing (NLP)
 - Integration with n8n workflows via HTTP API
 
+Installation:
+    pip install nvidia-riva-client soundfile numpy
+
 Usage:
     python examples/riva_integration_example.py --help
+
+Alternative: Use hybrid_speech_api.py for multi-engine speech support
 """
 
 import argparse
@@ -20,15 +28,33 @@ import asyncio
 import sys
 import os
 from typing import Optional
+import importlib
 
+# Import NVIDIA Riva dependencies (now that they're installed)
 try:
     import riva.client
     import soundfile as sf
     import numpy as np
+    RIVA_AVAILABLE = True
 except ImportError as e:
-    print(f"Error: Missing required dependency: {e}")
-    print("Please install with: pip install nvidia-riva-client soundfile")
-    sys.exit(1)
+    print(f"⚠️  NVIDIA Riva dependencies not available: {e}")
+    print("💡 Install with: pip install nvidia-riva-client soundfile")
+    print("🚀 This example won't run, but the main API server works without Riva")
+    
+    def main():
+        print("\n📚 NVIDIA Riva Integration Example")
+        print("=" * 40)
+        print("❌ Cannot run - missing dependencies")
+        print("💡 To enable this example:")
+        print("   pip install nvidia-riva-client soundfile")
+        print("🎯 Alternative: Use hybrid_speech_api.py (works with/without Riva)")
+        return False
+    
+    if __name__ == "__main__":
+        main()
+        sys.exit(0)
+    
+    RIVA_AVAILABLE = False
 
 
 class RivaClient:
