@@ -17,6 +17,49 @@
 
 ---
 
+## ⚡ **Quick Start - Zero Errors Setup**
+
+### 🎯 **New User? Start Here!**
+
+**Option 1: Guided Setup (Recommended)**
+```bash
+# 1. Run the setup verification
+python verify_setup.py
+
+# 2. Or use the interactive quick start
+python quick_start.py
+```
+
+**Option 2: Manual Setup**
+```bash
+# 1. Install basic requirements
+pip install fastapi uvicorn pydantic python-dotenv requests numpy
+
+# 2. Start Docker services
+docker-compose up -d
+
+# 3. Run the API server
+python examples/api_server.py
+
+# 4. Open n8n: http://localhost:5678
+```
+
+### 🚨 **Troubleshooting Common Issues**
+
+| Issue | Quick Fix |
+|-------|-----------|
+| ❌ Import errors | Run `python verify_setup.py` |
+| ❌ Docker not found | Install [Docker Desktop](https://www.docker.com/products/docker-desktop) |
+| ❌ Python version | Ensure Python 3.8+ is installed |
+| ❌ Port conflicts | Check if ports 5678, 8000, 8001 are available |
+
+### 🎉 **Success Indicators**
+- ✅ n8n running at: `http://localhost:5678`
+- ✅ API docs at: `http://localhost:8000/docs`
+- ✅ No import errors in terminal
+
+---
+
 ## 🎯 **What Makes This Special**
 
 This isn't just another AI starter kit - it's a **production-ready hybrid platform** that combines the best of cloud and local AI technologies:

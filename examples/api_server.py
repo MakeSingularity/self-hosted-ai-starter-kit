@@ -3,27 +3,58 @@ FastAPI server that provides AI services to n8n workflows
 Run this server and use HTTP Request nodes in n8n to call the endpoints
 
 Usage:
-1. Activate your conda environment: conda activate ai-starter-kit
-2. Install requirements: pip install -r requirements.txt
-3. Run the server: python examples/api_server.py
+1. Run setup verification: python verify_setup.py
+2. Install requirements (if needed): pip install -r requirements.txt
+3. Run this server: python examples/api_server.py
 4. Use HTTP Request nodes in n8n to call: http://localhost:8000/process-text
 
 API Documentation: http://localhost:8000/docs
 Health Check: http://localhost:8000/health
 """
 
-try:
-    from fastapi import FastAPI, HTTPException
-    from pydantic import BaseModel
-    import uvicorn
-    from typing import Optional
-    import os
-    from dotenv import load_dotenv
-except ImportError as e:
-    print(f"❌ Missing required package: {e}")
-    print("💡 Please run: pip install -r requirements.txt")
-    print("🔧 Or activate your conda environment: conda activate ai-starter-kit")
+def check_requirements():
+    """Check if required packages are available"""
+    missing_packages = []
+    
+    try:
+        import fastapi
+    except ImportError:
+        missing_packages.append("fastapi")
+    
+    try:
+        import uvicorn
+    except ImportError:
+        missing_packages.append("uvicorn")
+    
+    try:
+        import pydantic
+    except ImportError:
+        missing_packages.append("pydantic")
+    
+    if missing_packages:
+        print("🚫 Missing Required Packages")
+        print("=" * 40)
+        for pkg in missing_packages:
+            print(f"❌ {pkg}")
+        print("\n💡 Quick Fix:")
+        print("1. Run setup verification: python verify_setup.py")
+        print("2. Or install manually: pip install -r requirements.txt")
+        print("\n� For help, see README.md")
+        return False
+    
+    return True
+
+# Check requirements before importing
+if not check_requirements():
     exit(1)
+
+# Now import the packages
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import uvicorn
+from typing import Optional
+import os
+from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()

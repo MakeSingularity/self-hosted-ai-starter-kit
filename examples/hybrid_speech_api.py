@@ -4,11 +4,46 @@ Hybrid Speech API Server with multiple TTS/ASR backends
 Supports NVIDIA Riva (local/cloud), and fallback TTS engines
 
 Usage:
-1. Activate conda environment: conda activate ai-starter-kit
+1. Run setup verification: python verify_setup.py
 2. Install requirements: pip install -r requirements.txt
 3. Run server: python examples/hybrid_speech_api.py
 4. Access API docs: http://localhost:8001/docs
 """
+
+def check_core_requirements():
+    """Check if core packages are available"""
+    missing_packages = []
+    
+    try:
+        import fastapi
+    except ImportError:
+        missing_packages.append("fastapi")
+    
+    try:
+        import uvicorn
+    except ImportError:
+        missing_packages.append("uvicorn")
+    
+    try:
+        import pydantic
+    except ImportError:
+        missing_packages.append("pydantic")
+    
+    if missing_packages:
+        print("🚫 Missing Core Packages")
+        print("=" * 40)
+        for pkg in missing_packages:
+            print(f"❌ {pkg}")
+        print("\n💡 Quick Fix:")
+        print("1. Run: python verify_setup.py")
+        print("2. Or: pip install fastapi uvicorn pydantic")
+        return False
+    
+    return True
+
+# Check core requirements first
+if not check_core_requirements():
+    exit(1)
 
 try:
     from fastapi import FastAPI, HTTPException, UploadFile, File, Form
@@ -22,9 +57,8 @@ try:
     import logging
     from dotenv import load_dotenv
 except ImportError as e:
-    print(f"❌ Missing required package: {e}")
+    print(f"❌ Import error: {e}")
     print("💡 Please run: pip install -r requirements.txt")
-    print("🔧 Or activate your conda environment: conda activate ai-starter-kit")
     exit(1)
 
 # Configure logging
