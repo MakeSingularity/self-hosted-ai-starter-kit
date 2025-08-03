@@ -1,1 +1,51 @@
+# Environment variables
 .env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.pytest_cache/
+
+# AI/ML
+*.pkl
+*.model
+models/
+checkpoints/
+
+# Audio files (generated during testing)
+*.wav
+*.mp3
+*.m4a
+test_audio/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+.docker/
+
+# Temporary files
+temp/
+tmp/
+*.tmp

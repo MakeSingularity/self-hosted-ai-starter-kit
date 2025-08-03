@@ -4,16 +4,26 @@ Run this server and use HTTP Request nodes in n8n to call the endpoints
 
 Usage:
 1. Activate your conda environment: conda activate ai-starter-kit
-2. Run the server: python examples/api_server.py
-3. Use HTTP Request nodes in n8n to call: http://localhost:8000/process-text
+2. Install requirements: pip install -r requirements.txt
+3. Run the server: python examples/api_server.py
+4. Use HTTP Request nodes in n8n to call: http://localhost:8000/process-text
+
+API Documentation: http://localhost:8000/docs
+Health Check: http://localhost:8000/health
 """
 
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import uvicorn
-from typing import Optional
-import os
-from dotenv import load_dotenv
+try:
+    from fastapi import FastAPI, HTTPException
+    from pydantic import BaseModel
+    import uvicorn
+    from typing import Optional
+    import os
+    from dotenv import load_dotenv
+except ImportError as e:
+    print(f"❌ Missing required package: {e}")
+    print("💡 Please run: pip install -r requirements.txt")
+    print("🔧 Or activate your conda environment: conda activate ai-starter-kit")
+    exit(1)
 
 # Load environment variables
 load_dotenv()
