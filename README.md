@@ -37,7 +37,59 @@ Engineering world, handles large amounts of data safely.
 
 ## Installation
 
-### Cloning the Repository
+### Quick Setup (Recommended)
+
+For a one-click setup that handles everything automatically:
+
+#### Windows (PowerShell)
+```powershell
+# Clone and setup
+git clone https://github.com/n8n-io/self-hosted-ai-starter-kit.git
+cd self-hosted-ai-starter-kit
+
+# One-click setup with CPU support
+.\setup.ps1
+
+# Or with GPU support
+.\setup.ps1 -Profile gpu-nvidia
+```
+
+#### Linux/macOS (Bash)
+```bash
+# Clone and setup
+git clone https://github.com/n8n-io/self-hosted-ai-starter-kit.git
+cd self-hosted-ai-starter-kit
+
+# Make script executable and run
+chmod +x setup.sh
+
+# One-click setup with CPU support
+./setup.sh
+
+# Or with GPU support
+./setup.sh --profile gpu-nvidia
+```
+
+The setup script will:
+- ✅ Check prerequisites (Docker, conda)
+- ✅ Create Python environment with AI packages
+- ✅ Set up environment variables
+- ✅ Pull and start all Docker services
+- ✅ Provide you with service URLs
+
+### Python Environment Integration
+
+The setup creates a local Python environment (`ai-starter-kit`) that works alongside your n8n workflows:
+
+- **HTTP API Server**: Run `python examples/api_server.py` for n8n to call via HTTP Request nodes
+- **Execute Commands**: Use n8n's Execute Command node to run Python scripts directly
+- **Shared Files**: Exchange data through the `/data/shared` folder mounted in both environments
+
+See `examples/PYTHON_INTEGRATION.md` for detailed integration patterns and examples.
+
+### Manual Installation
+
+#### Cloning the Repository
 
 ```bash
 git clone https://github.com/n8n-io/self-hosted-ai-starter-kit.git
@@ -45,9 +97,9 @@ cd self-hosted-ai-starter-kit
 cp .env.example .env # you should update secrets and passwords inside
 ```
 
-### Running n8n using Docker Compose
+#### Running n8n using Docker Compose
 
-#### For Nvidia GPU users
+##### For Nvidia GPU users
 
 ```bash
 git clone https://github.com/n8n-io/self-hosted-ai-starter-kit.git

@@ -92,6 +92,7 @@ services:
       - n8n_storage:/home/node/.n8n
       - ./n8n/demo-data:/demo-data
       - ./shared:/data/shared
+      - "c:/AI Projects/self-hosted-ai-starter-kit/docker-compose.yml:/opt/n8n_files/docker-compose.yml"
     depends_on:
       postgres:
         condition: service_healthy
@@ -150,3 +151,24 @@ services:
     image: ollama/ollama:rocm
     depends_on:
      - ollama-gpu-amd
+
+  riva:
+    image: nvcr.io/nvidia/riva/riva-speech:2.14.0
+    hostname: riva
+    container_name: riva
+    networks: ['demo']
+    environment:
+      NVIDIA_DRIVER_VERSION: 470.103.01
+      RIVA_API_KEY: ${NVIDIA_RIVA_API_KEY}
+    volumes:
+      - "c:/AI Projects/self-hosted-ai-starter-kit:/app/data"
+    env_file:
+      - path: .env
+        required: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
