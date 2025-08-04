@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "instanceId": "environment-aware-ai-workflow"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "start-node",
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8002/quick-check",
+        "options": {}
+      },
+      "id": "detect-environment",
+      "name": "Detect Environment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [460, 300],
+      "notes": "Quick environment detection to understand our runtime context"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.environment_type}}",
+              "operation": "equal",
+              "value2": "container"
+            }
+          ]
+        }
+      },
+      "id": "check-container",
+      "name": "Is Container?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "notes": "Branch logic based on environment type"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8002/ai-capabilities",
+        "options": {}
+      },
+      "id": "get-ai-capabilities",
+      "name": "Get AI Capabilities",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 200],
+      "notes": "Get detailed AI capabilities for container environment"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/process-text",
+        "options": {
+          "body": {
+            "text": "={{$json.memory_gb < 8 ? 'Use lightweight processing for this low-memory environment' : 'Use full AI processing capabilities'}}",
+            "operation": "summarize"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "POST"
+      },
+      "id": "adaptive-processing",
+      "name": "Adaptive AI Processing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 200],
+      "notes": "AI processing that adapts based on available resources"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Environment-aware AI agent logic\nconst envData = $input.first().json;\n\n// Determine processing strategy based on environment\nlet strategy = {\n  model_size: 'medium',\n  batch_size: 32,\n  use_gpu: false,\n  memory_optimization: false\n};\n\n// Adapt based on memory\nif (envData.memory_gb < 4) {\n  strategy.model_size = 'small';\n  strategy.batch_size = 8;\n  strategy.memory_optimization = true;\n} else if (envData.memory_gb > 16) {\n  strategy.model_size = 'large';\n  strategy.batch_size = 64;\n}\n\n// Adapt based on GPU\nif (envData.gpu_available) {\n  strategy.use_gpu = true;\n  strategy.batch_size *= 2; // Can handle larger batches with GPU\n}\n\n// Adapt based on environment type\nif (envData.environment_type === 'container') {\n  strategy.memory_optimization = true;\n  strategy.batch_size = Math.min(strategy.batch_size, 16); // Conservative in containers\n}\n\n// Check service availability\nconst servicesAvailable = {\n  n8n: envData.services_running?.n8n || false,\n  ollama: envData.services_running?.ollama || false,\n  qdrant: envData.services_running?.qdrant || false\n};\n\nreturn {\n  json: {\n    environment: envData,\n    processing_strategy: strategy,\n    services_available: servicesAvailable,\n    recommendations: [\n      `Use ${strategy.model_size} model size`,\n      `Batch size: ${strategy.batch_size}`,\n      strategy.use_gpu ? 'Enable GPU acceleration' : 'Use CPU processing',\n      strategy.memory_optimization ? 'Enable memory optimization' : 'Standard memory usage'\n    ],\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "id": "native-processing",
+      "name": "Native Environment Logic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [900, 400],
+      "notes": "Custom logic for native environments"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8002/recommendations",
+        "options": {}
+      },
+      "id": "get-recommendations",
+      "name": "Get Recommendations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 300],
+      "notes": "Get environment-specific recommendations"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge all environment data and create final AI agent instructions\nconst items = $input.all();\n\nlet environmentData = {};\nlet capabilities = {};\nlet recommendations = [];\nlet processingResults = {};\n\n// Process all input data\nitems.forEach(item => {\n  if (item.json.environment_type) {\n    environmentData = item.json;\n  }\n  if (item.json.llm_support !== undefined) {\n    capabilities = item.json;\n  }\n  if (item.json.recommendations) {\n    recommendations = item.json.recommendations;\n  }\n  if (item.json.processing_strategy) {\n    processingResults = item.json;\n  }\n});\n\n// Create comprehensive AI agent context\nconst aiAgentContext = {\n  execution_environment: {\n    type: environmentData.environment_type || 'unknown',\n    memory_gb: environmentData.memory_gb || 0,\n    cpu_count: environmentData.cpu_count || 1,\n    gpu_available: environmentData.gpu_available || false,\n    internet_connected: environmentData.internet_connected || false\n  },\n  \n  ai_capabilities: {\n    llm_support: capabilities.llm_support || false,\n    gpu_acceleration: capabilities.gpu_acceleration || false,\n    speech_synthesis: capabilities.speech_synthesis || false,\n    speech_recognition: capabilities.speech_recognition || false,\n    vector_database: capabilities.vector_database || false\n  },\n  \n  processing_strategy: processingResults.processing_strategy || {\n    model_size: 'small',\n    batch_size: 8,\n    use_gpu: false,\n    memory_optimization: true\n  },\n  \n  services_status: environmentData.services_running || {},\n  \n  recommendations: recommendations,\n  \n  agent_instructions: [\n    \"Adapt processing based on available resources\",\n    environmentData.memory_gb < 8 ? \"Use memory-efficient algorithms\" : \"Can use memory-intensive operations\",\n    environmentData.gpu_available ? \"Leverage GPU acceleration when possible\" : \"Optimize for CPU processing\",\n    environmentData.internet_connected ? \"Can access external APIs\" : \"Use local models only\",\n    environmentData.environment_type === 'container' ? \"Consider container resource limits\" : \"Can use full system resources\"\n  ],\n  \n  analysis_timestamp: new Date().toISOString(),\n  \n  summary: {\n    environment_optimal: environmentData.memory_gb >= 8 && environmentData.cpu_count >= 4,\n    ai_ready: capabilities.llm_support && capabilities.vector_database,\n    production_ready: environmentData.services_running?.n8n && environmentData.internet_connected\n  }\n};\n\nreturn { json: aiAgentContext };"
+      },
+      "id": "create-agent-context",
+      "name": "Create AI Agent Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1340, 300],
+      "notes": "Synthesize all environment data into actionable AI agent context"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "ai-agent-context.json",
+        "data": "={{JSON.stringify($json, null, 2)}}",
+        "options": {}
+      },
+      "id": "save-context",
+      "name": "Save Agent Context",
+      "type": "n8n-nodes-base.writeFile",
+      "typeVersion": 1,
+      "position": [1560, 300],
+      "notes": "Save the environment context for other workflows to use"
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Detect Environment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Environment": {
+      "main": [
+        [
+          {
+            "node": "Is Container?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Container?": {
+      "main": [
+        [
+          {
+            "node": "Get AI Capabilities",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Native Environment Logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get AI Capabilities": {
+      "main": [
+        [
+          {
+            "node": "Adaptive AI Processing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create AI Agent Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Native Environment Logic": {
+      "main": [
+        [
+          {
+            "node": "Get Recommendations",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create AI Agent Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recommendations": {
+      "main": [
+        [
+          {
+            "node": "Create AI Agent Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Adaptive AI Processing": {
+      "main": [
+        [
+          {
+            "node": "Create AI Agent Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create AI Agent Context": {
+      "main": [
+        [
+          {
+            "node": "Save Agent Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-08-03T00:00:00.000Z",
+  "versionId": "1"
+}

@@ -1,0 +1,608 @@
+{
+  "meta": {
+    "instanceId": "ai-setup-monitor-workflow"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "setup-trigger",
+      "name": "Manual Setup Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python3",
+        "additionalFlags": {
+          "flags": [
+            "/app/n8n_container_check.py"
+          ]
+        },
+        "options": {
+          "cwd": "/app"
+        }
+      },
+      "id": "environment-check",
+      "name": "Check Environment",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8002/environment",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "environment-api",
+      "name": "Get Environment Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "docker-compose",
+        "additionalFlags": {
+          "flags": [
+            "ps",
+            "--format",
+            "json"
+          ]
+        },
+        "options": {
+          "cwd": "/app/workspace"
+        }
+      },
+      "id": "docker-status",
+      "name": "Check Docker Services",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5678/api/v1/workflows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "n8n-health",
+      "name": "Check n8n Health",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1120,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:11434/api/tags",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "ollama-health",
+      "name": "Check Ollama Models",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:6333/collections",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "qdrant-health",
+      "name": "Check Qdrant Collections",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1120,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/health",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "api-server-health",
+      "name": "Check API Server",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1120,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// AI-Powered Service Analysis\nconst items = $input.all();\n\n// Extract data from different sources\nconst environmentData = items.find(item => item.json.environment)?.json || {};\nconst dockerData = items.find(item => item.json.Name && item.json.State);\nconst n8nData = items.find(item => item.json.data && Array.isArray(item.json.data));\nconst ollamaData = items.find(item => item.json.models);\nconst qdrantData = items.find(item => item.json.result);\nconst apiData = items.find(item => item.json.status === 'healthy');\n\n// Analyze environment context\nconst environment = environmentData.environment || {};\nconst isDocker = environment.container_type === 'docker';\nconst hasGPU = environment.hardware?.gpu_available || false;\nconst totalRAM = environment.hardware?.memory_total_gb || 0;\nconst cpuCores = environment.hardware?.cpu_cores || 0;\n\n// Service Status Analysis\nconst services = {\n  docker_compose: {\n    status: dockerData ? 'running' : 'stopped',\n    containers: dockerData ? 1 : 0,\n    health: dockerData?.State === 'running' ? 'healthy' : 'unhealthy'\n  },\n  n8n: {\n    status: n8nData ? 'running' : 'stopped',\n    workflows: n8nData?.data?.length || 0,\n    health: n8nData ? 'healthy' : 'unhealthy'\n  },\n  ollama: {\n    status: ollamaData ? 'running' : 'stopped',\n    models: ollamaData?.models?.length || 0,\n    health: ollamaData ? 'healthy' : 'unhealthy'\n  },\n  qdrant: {\n    status: qdrantData ? 'running' : 'stopped',\n    collections: qdrantData?.result?.collections?.length || 0,\n    health: qdrantData ? 'healthy' : 'unhealthy'\n  },\n  api_server: {\n    status: apiData ? 'running' : 'stopped',\n    health: apiData ? 'healthy' : 'unhealthy'\n  }\n};\n\n// AI Analysis and Recommendations\nfunction generateAIInsights() {\n  const insights = [];\n  const warnings = [];\n  const recommendations = [];\n  \n  // Performance Analysis\n  if (totalRAM < 8) {\n    warnings.push(`Low RAM detected (${totalRAM}GB). Consider upgrading for better performance.`);\n    recommendations.push('Disable unnecessary services or upgrade to 16GB+ RAM');\n  }\n  \n  if (!hasGPU && services.ollama.status === 'running') {\n    insights.push('Ollama running on CPU. GPU acceleration would significantly improve performance.');\n    recommendations.push('Consider NVIDIA GPU for AI workloads or use lighter models');\n  }\n  \n  // Service Health Analysis\n  const runningServices = Object.keys(services).filter(key => services[key].status === 'running');\n  const healthyServices = Object.keys(services).filter(key => services[key].health === 'healthy');\n  \n  if (runningServices.length === Object.keys(services).length) {\n    insights.push('🎉 All services are running! Your AI platform is fully operational.');\n  } else {\n    const stoppedServices = Object.keys(services).filter(key => services[key].status === 'stopped');\n    warnings.push(`Services not running: ${stoppedServices.join(', ')}`);\n    recommendations.push('Run: docker-compose up -d to start missing services');\n  }\n  \n  // Model Analysis\n  if (services.ollama.models === 0) {\n    warnings.push('No Ollama models detected');\n    recommendations.push('Pull models: docker exec ollama ollama pull llama2');\n  } else {\n    insights.push(`Ollama has ${services.ollama.models} model(s) available`);\n  }\n  \n  // Workflow Analysis\n  if (services.n8n.workflows === 0) {\n    insights.push('No workflows detected in n8n');\n    recommendations.push('Import demo workflows from n8n/demo-data/workflows/');\n  } else {\n    insights.push(`n8n has ${services.n8n.workflows} workflow(s) configured`);\n  }\n  \n  // Vector Database Analysis\n  if (services.qdrant.collections === 0) {\n    insights.push('Qdrant vector database is empty');\n    recommendations.push('Create collections for RAG applications');\n  } else {\n    insights.push(`Qdrant has ${services.qdrant.collections} collection(s)`);\n  }\n  \n  return { insights, warnings, recommendations };\n}\n\nconst aiAnalysis = generateAIInsights();\n\n// Generate Performance Score\nfunction calculatePerformanceScore() {\n  let score = 0;\n  let maxScore = 100;\n  \n  // Service availability (40 points)\n  const runningServices = Object.keys(services).filter(key => services[key].status === 'running').length;\n  const totalServices = Object.keys(services).length;\n  score += (runningServices / totalServices) * 40;\n  \n  // Hardware score (30 points)\n  if (hasGPU) score += 15;\n  if (totalRAM >= 16) score += 10;\n  else if (totalRAM >= 8) score += 5;\n  if (cpuCores >= 8) score += 5;\n  \n  // Content score (30 points)\n  if (services.ollama.models > 0) score += 10;\n  if (services.n8n.workflows > 0) score += 10;\n  if (services.qdrant.collections > 0) score += 10;\n  \n  return Math.round(score);\n}\n\nconst performanceScore = calculatePerformanceScore();\n\n// Generate Status Report\nconst statusReport = {\n  timestamp: new Date().toISOString(),\n  environment: {\n    type: isDocker ? 'Docker Container' : 'Native',\n    hardware: {\n      cpu_cores: cpuCores,\n      memory_gb: totalRAM,\n      gpu_available: hasGPU\n    }\n  },\n  services,\n  performance: {\n    score: performanceScore,\n    grade: performanceScore >= 90 ? 'A' : performanceScore >= 80 ? 'B' : performanceScore >= 70 ? 'C' : 'D',\n    status: performanceScore >= 80 ? 'Excellent' : performanceScore >= 60 ? 'Good' : 'Needs Improvement'\n  },\n  ai_analysis: aiAnalysis,\n  summary: {\n    total_services: Object.keys(services).length,\n    running_services: Object.keys(services).filter(key => services[key].status === 'running').length,\n    healthy_services: Object.keys(services).filter(key => services[key].health === 'healthy').length,\n    total_models: services.ollama.models,\n    total_workflows: services.n8n.workflows,\n    total_collections: services.qdrant.collections\n  }\n};\n\nreturn [{ json: statusReport }];"
+      },
+      "id": "ai-analysis",
+      "name": "AI Service Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "./shared/ai-setup-status-report.json",
+        "dataPropertyName": "json",
+        "options": {
+          "encoding": "utf8"
+        }
+      },
+      "id": "save-report",
+      "name": "Save Status Report",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate Human-Readable Status Report\nconst data = $input.first().json;\n\nconst report = `\n🚀 AI STARTER KIT - STATUS REPORT\n${'='.repeat(50)}\n\n📊 PERFORMANCE SCORE: ${data.performance.score}/100 (Grade: ${data.performance.grade})\nStatus: ${data.performance.status}\n\n🖥️  ENVIRONMENT:\nType: ${data.environment.type}\nCPU Cores: ${data.environment.hardware.cpu_cores}\nMemory: ${data.environment.hardware.memory_gb}GB\nGPU Available: ${data.environment.hardware.gpu_available ? 'Yes' : 'No'}\n\n🔧 SERVICES STATUS:\n${Object.entries(data.services).map(([name, service]) => {\n  const icon = service.health === 'healthy' ? '✅' : '❌';\n  const status = service.status === 'running' ? 'Running' : 'Stopped';\n  return `${icon} ${name.replace('_', ' ').toUpperCase()}: ${status}`;\n}).join('\\n')}\n\n📈 CONTENT SUMMARY:\n• Ollama Models: ${data.summary.total_models}\n• n8n Workflows: ${data.summary.total_workflows}\n• Qdrant Collections: ${data.summary.total_collections}\n\n🤖 AI INSIGHTS:\n${data.ai_analysis.insights.map(insight => `💡 ${insight}`).join('\\n')}\n\n${data.ai_analysis.warnings.length > 0 ? `⚠️  WARNINGS:\\n${data.ai_analysis.warnings.map(warning => `⚠️  ${warning}`).join('\\n')}\\n` : ''}\n\n🎯 RECOMMENDATIONS:\n${data.ai_analysis.recommendations.map(rec => `🔧 ${rec}`).join('\\n')}\n\n📅 Generated: ${new Date(data.timestamp).toLocaleString()}\n${'='.repeat(50)}\n`;\n\nreturn [{ json: { report } }];"
+      },
+      "id": "format-report",
+      "name": "Format Human Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "./shared/ai-setup-status-report.txt",
+        "dataPropertyName": "report",
+        "options": {
+          "encoding": "utf8"
+        }
+      },
+      "id": "save-readable-report",
+      "name": "Save Readable Report",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "choose",
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "setup-needed",
+              "leftValue": "={{ $('AI Service Analysis').first().json.performance.score }}",
+              "rightValue": 70,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "setup-check",
+      "name": "Need Setup?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        550
+      ]
+    },
+    {
+      "parameters": {
+        "command": "docker-compose",
+        "additionalFlags": {
+          "flags": [
+            "up",
+            "-d"
+          ]
+        },
+        "options": {
+          "cwd": "/app/workspace"
+        }
+      },
+      "id": "auto-setup",
+      "name": "Auto Start Services",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        550
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "wait-for-services",
+      "name": "Wait for Services",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        550
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8002/environment",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "recheck-environment",
+      "name": "Recheck After Setup",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2000,
+        550
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-webhook",
+              "leftValue": "={{ $('Check Environment').first().json.webhook_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "webhook-check",
+      "name": "Has Webhook?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2220,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Check Environment').first().json.webhook_url }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "setup_complete"
+            },
+            {
+              "name": "data",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "notify-webhook",
+      "name": "Notify External System",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2440,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "cronExpression": "0 */15 * * * *",
+        "triggerAtStartup": false
+      },
+      "id": "monitoring-cron",
+      "name": "Continuous Monitoring",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        240,
+        600
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Setup Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check Environment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Environment": {
+      "main": [
+        [
+          {
+            "node": "Get Environment Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Environment Details": {
+      "main": [
+        [
+          {
+            "node": "Check Docker Services",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Docker Services": {
+      "main": [
+        [
+          {
+            "node": "Check n8n Health",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Ollama Models",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Qdrant Collections",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check API Server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check n8n Health": {
+      "main": [
+        [
+          {
+            "node": "AI Service Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Ollama Models": {
+      "main": [
+        [
+          {
+            "node": "AI Service Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Qdrant Collections": {
+      "main": [
+        [
+          {
+            "node": "AI Service Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check API Server": {
+      "main": [
+        [
+          {
+            "node": "AI Service Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Service Analysis": {
+      "main": [
+        [
+          {
+            "node": "Save Status Report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Need Setup?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Status Report": {
+      "main": [
+        [
+          {
+            "node": "Format Human Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Human Report": {
+      "main": [
+        [
+          {
+            "node": "Save Readable Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Readable Report": {
+      "main": [
+        [
+          {
+            "node": "Has Webhook?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Need Setup?": {
+      "main": [
+        [
+          {
+            "node": "Auto Start Services",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto Start Services": {
+      "main": [
+        [
+          {
+            "node": "Wait for Services",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Services": {
+      "main": [
+        [
+          {
+            "node": "Recheck After Setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck After Setup": {
+      "main": [
+        [
+          {
+            "node": "AI Service Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Webhook?": {
+      "main": [
+        [
+          {
+            "node": "Notify External System",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continuous Monitoring": {
+      "main": [
+        [
+          {
+            "node": "Get Environment Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-08-03T12:00:00.000Z",
+      "updatedAt": "2025-08-03T12:00:00.000Z",
+      "id": "ai-setup",
+      "name": "AI Setup"
+    },
+    {
+      "createdAt": "2025-08-03T12:00:00.000Z",
+      "updatedAt": "2025-08-03T12:00:00.000Z",
+      "id": "monitoring",
+      "name": "Monitoring"
+    }
+  ],
+  "triggerCount": 2,
+  "updatedAt": "2025-08-03T12:00:00.000Z",
+  "versionId": "ai-setup-monitor-v1"
+}

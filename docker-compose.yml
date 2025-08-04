@@ -8,7 +8,10 @@ networks:
   demo:
 
 x-n8n: &service-n8n
-  image: n8nio/n8n:latest
+  image: n8n-python:latest
+  build:
+    context: .
+    dockerfile: Dockerfile.n8n-python
   networks: ['demo']
   environment:
     - DB_TYPE=postgresdb
@@ -20,9 +23,15 @@ x-n8n: &service-n8n
     - N8N_ENCRYPTION_KEY
     - N8N_USER_MANAGEMENT_JWT_SECRET
     - OLLAMA_HOST=${OLLAMA_HOST:-ollama:11434}
+    - PYTHONPATH=/app
+    - PYTHON_UNBUFFERED=1
   env_file:
     - path: .env
       required: true
+  volumes:
+    - ./shared:/app/shared:rw
+    - ./examples:/app/scripts:ro
+    - .:/app/workspace:ro
 
 x-ollama: &service-ollama
   image: ollama/ollama:latest

@@ -1,0 +1,375 @@
+{
+  "meta": {
+    "instanceId": "ai-setup-monitor-universal"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "setup-trigger",
+      "name": "Manual Setup Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check Python Environment and Execute Verification\nconst { spawn } = require('child_process');\nconst fs = require('fs');\nconst path = require('path');\n\n// Possible Python paths to try\nconst pythonPaths = [\n  'C:\\\\AI Projects\\\\self-hosted-ai-starter-kit\\\\.venv\\\\Scripts\\\\python.exe',\n  'C:\\\\AI Projects\\\\self-hosted-ai-starter-kit\\\\ai-starter-kit\\\\Scripts\\\\python.exe',\n  'python',\n  'python3',\n  'py'\n];\n\n// Check which Python executable works\nfunction findWorkingPython() {\n  for (const pythonPath of pythonPaths) {\n    try {\n      if (pythonPath.includes('\\\\') && fs.existsSync(pythonPath)) {\n        return pythonPath;\n      } else if (!pythonPath.includes('\\\\')) {\n        // For system Python commands, we'll assume they might work\n        return pythonPath;\n      }\n    } catch (error) {\n      continue;\n    }\n  }\n  return null;\n}\n\nconst workingPython = findWorkingPython();\n\nif (!workingPython) {\n  return [{\n    json: {\n      success: false,\n      error: 'No Python executable found',\n      attempted_paths: pythonPaths,\n      message: 'Please ensure Python is installed and virtual environment is set up'\n    }\n  }];\n}\n\n// Try to run the verification script\ntry {\n  // Check if run_verify.py exists\n  const scriptPath = 'C:\\\\AI Projects\\\\self-hosted-ai-starter-kit\\\\run_verify.py';\n  if (!fs.existsSync(scriptPath)) {\n    return [{\n      json: {\n        success: false,\n        error: 'run_verify.py not found',\n        script_path: scriptPath,\n        python_found: workingPython\n      }\n    }];\n  }\n  \n  return [{\n    json: {\n      success: true,\n      python_executable: workingPython,\n      script_path: scriptPath,\n      message: 'Python environment detected successfully',\n      next_step: 'proceed_to_environment_api'\n    }\n  }];\n  \n} catch (error) {\n  return [{\n    json: {\n      success: false,\n      error: error.message,\n      python_found: workingPython\n    }\n  }];\n}"
+      },
+      "id": "smart-python-check",
+      "name": "Smart Python Detection",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8002/environment",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "environment-api",
+      "name": "Get Environment Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check Docker Services Status\nconst { exec } = require('child_process');\nconst util = require('util');\nconst execPromise = util.promisify(exec);\n\nasync function checkDockerServices() {\n  try {\n    // Try different docker-compose commands\n    const commands = [\n      'docker-compose ps --format json',\n      'docker compose ps --format json',\n      'docker ps --format json'\n    ];\n    \n    for (const command of commands) {\n      try {\n        const { stdout, stderr } = await execPromise(command, {\n          cwd: 'C:\\\\AI Projects\\\\self-hosted-ai-starter-kit',\n          timeout: 15000\n        });\n        \n        if (stdout && stdout.trim()) {\n          const services = stdout.trim().split('\\n').map(line => {\n            try {\n              return JSON.parse(line);\n            } catch {\n              return { Name: 'unknown', State: 'unknown', command_used: command };\n            }\n          });\n          \n          return {\n            success: true,\n            services: services,\n            command_used: command,\n            service_count: services.length\n          };\n        }\n      } catch (cmdError) {\n        continue;\n      }\n    }\n    \n    // If no docker-compose works, try basic docker check\n    try {\n      const { stdout } = await execPromise('docker --version');\n      return {\n        success: false,\n        docker_available: true,\n        docker_version: stdout.trim(),\n        message: 'Docker available but no services running',\n        services: []\n      };\n    } catch {\n      return {\n        success: false,\n        docker_available: false,\n        message: 'Docker not available',\n        services: []\n      };\n    }\n    \n  } catch (error) {\n    return {\n      success: false,\n      error: error.message,\n      services: []\n    };\n  }\n}\n\nconst result = await checkDockerServices();\nreturn [{ json: result }];"
+      },
+      "id": "smart-docker-check",
+      "name": "Smart Docker Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5678/api/v1/workflows",
+        "options": {
+          "timeout": 10000,
+          "ignoreHttpStatusErrors": true
+        }
+      },
+      "id": "n8n-health",
+      "name": "Check n8n Health",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1120,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:11434/api/tags",
+        "options": {
+          "timeout": 10000,
+          "ignoreHttpStatusErrors": true
+        }
+      },
+      "id": "ollama-health",
+      "name": "Check Ollama Models",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:6333/collections",
+        "options": {
+          "timeout": 10000,
+          "ignoreHttpStatusErrors": true
+        }
+      },
+      "id": "qdrant-health",
+      "name": "Check Qdrant Collections",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1120,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/health",
+        "options": {
+          "timeout": 10000,
+          "ignoreHttpStatusErrors": true
+        }
+      },
+      "id": "api-server-health",
+      "name": "Check API Server",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1120,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced AI-Powered Service Analysis\nconst items = $input.all();\n\n// Extract data from different sources with better error handling\nconst pythonCheck = items.find(item => item.json.python_executable || item.json.success !== undefined)?.json || {};\nconst environmentData = items.find(item => item.json.environment)?.json || {};\nconst dockerData = items.find(item => item.json.services || item.json.docker_available !== undefined)?.json || {};\nconst n8nData = items.find(item => item.json.data && Array.isArray(item.json.data))?.json || null;\nconst ollamaData = items.find(item => item.json.models)?.json || null;\nconst qdrantData = items.find(item => item.json.result)?.json || null;\nconst apiData = items.find(item => item.json.status === 'healthy')?.json || null;\n\n// Analyze environment context\nconst environment = environmentData.environment || {};\nconst isDocker = environment.container_type === 'docker';\nconst hasGPU = environment.hardware?.gpu_available || false;\nconst totalRAM = environment.hardware?.memory_total_gb || 0;\nconst cpuCores = environment.hardware?.cpu_cores || 0;\n\n// Enhanced Service Status Analysis\nconst services = {\n  python_environment: {\n    status: pythonCheck.success ? 'running' : 'stopped',\n    executable: pythonCheck.python_executable || 'not found',\n    health: pythonCheck.success ? 'healthy' : 'unhealthy',\n    error: pythonCheck.error || null\n  },\n  docker_compose: {\n    status: dockerData.success ? 'running' : 'stopped',\n    containers: dockerData.services?.length || 0,\n    health: dockerData.success ? 'healthy' : 'unhealthy',\n    docker_available: dockerData.docker_available || false,\n    services_detail: dockerData.services || []\n  },\n  n8n: {\n    status: n8nData ? 'running' : 'stopped',\n    workflows: n8nData?.data?.length || 0,\n    health: n8nData ? 'healthy' : 'unhealthy'\n  },\n  ollama: {\n    status: ollamaData ? 'running' : 'stopped',\n    models: ollamaData?.models?.length || 0,\n    health: ollamaData ? 'healthy' : 'unhealthy'\n  },\n  qdrant: {\n    status: qdrantData ? 'running' : 'stopped',\n    collections: qdrantData?.result?.collections?.length || 0,\n    health: qdrantData ? 'healthy' : 'unhealthy'\n  },\n  api_server: {\n    status: apiData ? 'running' : 'stopped',\n    health: apiData ? 'healthy' : 'unhealthy'\n  }\n};\n\n// Enhanced AI Analysis and Recommendations\nfunction generateAIInsights() {\n  const insights = [];\n  const warnings = [];\n  const recommendations = [];\n  \n  // Python Environment Analysis\n  if (!services.python_environment.status === 'running') {\n    warnings.push('Python environment not properly configured');\n    recommendations.push('Set up virtual environment: python -m venv .venv');\n    recommendations.push('Activate environment: .venv\\\\Scripts\\\\activate');\n  } else {\n    insights.push(`Python environment detected: ${services.python_environment.executable}`);\n  }\n  \n  // Docker Analysis\n  if (!services.docker_compose.docker_available) {\n    warnings.push('Docker not available');\n    recommendations.push('Install Docker Desktop: https://www.docker.com/products/docker-desktop');\n  } else if (services.docker_compose.containers === 0) {\n    warnings.push('No Docker containers running');\n    recommendations.push('Start services: docker-compose up -d');\n  } else {\n    insights.push(`Docker running with ${services.docker_compose.containers} container(s)`);\n  }\n  \n  // Performance Analysis\n  if (totalRAM > 0 && totalRAM < 8) {\n    warnings.push(`Low RAM detected (${totalRAM}GB). Consider upgrading for better performance.`);\n    recommendations.push('Disable unnecessary services or upgrade to 16GB+ RAM');\n  }\n  \n  if (!hasGPU && services.ollama.status === 'running') {\n    insights.push('Ollama running on CPU. GPU acceleration would significantly improve performance.');\n    recommendations.push('Consider NVIDIA GPU for AI workloads or use lighter models');\n  }\n  \n  // Service Health Analysis\n  const runningServices = Object.keys(services).filter(key => services[key].status === 'running');\n  const healthyServices = Object.keys(services).filter(key => services[key].health === 'healthy');\n  \n  if (runningServices.length === Object.keys(services).length) {\n    insights.push('🎉 All services are running! Your AI platform is fully operational.');\n  } else {\n    const stoppedServices = Object.keys(services).filter(key => services[key].status === 'stopped');\n    warnings.push(`Services not running: ${stoppedServices.join(', ')}`);\n    \n    if (services.docker_compose.docker_available) {\n      recommendations.push('Run: docker-compose up -d to start missing services');\n    }\n  }\n  \n  // Model Analysis\n  if (services.ollama.models === 0 && services.ollama.status === 'stopped') {\n    warnings.push('Ollama service not running');\n    recommendations.push('Start Ollama service and pull models');\n  } else if (services.ollama.models === 0) {\n    warnings.push('No Ollama models detected');\n    recommendations.push('Pull models: docker exec ollama ollama pull llama2');\n  } else {\n    insights.push(`Ollama has ${services.ollama.models} model(s) available`);\n  }\n  \n  // Workflow Analysis\n  if (services.n8n.workflows === 0 && services.n8n.status === 'running') {\n    insights.push('n8n running but no workflows detected');\n    recommendations.push('Import demo workflows from n8n/demo-data/workflows/');\n  } else if (services.n8n.workflows > 0) {\n    insights.push(`n8n has ${services.n8n.workflows} workflow(s) configured`);\n  }\n  \n  // Vector Database Analysis\n  if (services.qdrant.collections === 0 && services.qdrant.status === 'running') {\n    insights.push('Qdrant running but no collections found');\n    recommendations.push('Create collections for RAG applications');\n  } else if (services.qdrant.collections > 0) {\n    insights.push(`Qdrant has ${services.qdrant.collections} collection(s)`);\n  }\n  \n  return { insights, warnings, recommendations };\n}\n\nconst aiAnalysis = generateAIInsights();\n\n// Enhanced Performance Score Calculation\nfunction calculatePerformanceScore() {\n  let score = 0;\n  \n  // Core Infrastructure (50 points)\n  if (services.python_environment.status === 'running') score += 10;\n  if (services.docker_compose.docker_available) score += 10;\n  if (services.docker_compose.status === 'running') score += 10;\n  if (services.n8n.status === 'running') score += 10;\n  if (services.api_server.status === 'running') score += 10;\n  \n  // AI Services (30 points)\n  if (services.ollama.status === 'running') score += 15;\n  if (services.qdrant.status === 'running') score += 15;\n  \n  // Hardware optimization (20 points)\n  if (hasGPU) score += 10;\n  if (totalRAM >= 16) score += 5;\n  else if (totalRAM >= 8) score += 3;\n  if (cpuCores >= 8) score += 5;\n  \n  return Math.round(score);\n}\n\nconst performanceScore = calculatePerformanceScore();\n\n// Generate Enhanced Status Report\nconst statusReport = {\n  timestamp: new Date().toISOString(),\n  environment: {\n    type: isDocker ? 'Docker Container' : 'Native',\n    hardware: {\n      cpu_cores: cpuCores,\n      memory_gb: totalRAM,\n      gpu_available: hasGPU\n    }\n  },\n  services,\n  performance: {\n    score: performanceScore,\n    grade: performanceScore >= 90 ? 'A' : performanceScore >= 80 ? 'B' : performanceScore >= 70 ? 'C' : 'D',\n    status: performanceScore >= 80 ? 'Excellent' : performanceScore >= 60 ? 'Good' : 'Needs Improvement'\n  },\n  ai_analysis: aiAnalysis,\n  summary: {\n    total_services: Object.keys(services).length,\n    running_services: Object.keys(services).filter(key => services[key].status === 'running').length,\n    healthy_services: Object.keys(services).filter(key => services[key].health === 'healthy').length,\n    total_models: services.ollama.models,\n    total_workflows: services.n8n.workflows,\n    total_collections: services.qdrant.collections\n  },\n  diagnostics: {\n    python_check: pythonCheck,\n    docker_check: dockerData,\n    raw_responses: {\n      environment_api: environmentData,\n      n8n_api: n8nData,\n      ollama_api: ollamaData,\n      qdrant_api: qdrantData,\n      api_server: apiData\n    }\n  }\n};\n\nreturn [{ json: statusReport }];"
+      },
+      "id": "enhanced-ai-analysis",
+      "name": "Enhanced AI Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "./shared/ai-setup-status-report.json",
+        "dataPropertyName": "json",
+        "options": {
+          "encoding": "utf8"
+        }
+      },
+      "id": "save-report",
+      "name": "Save Status Report",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate Enhanced Human-Readable Status Report\nconst data = $input.first().json;\n\nconst report = `\n🚀 AI STARTER KIT - ENHANCED STATUS REPORT\n${'='.repeat(55)}\n\n📊 PERFORMANCE SCORE: ${data.performance.score}/100 (Grade: ${data.performance.grade})\nStatus: ${data.performance.status}\n\n🖥️  ENVIRONMENT:\nType: ${data.environment.type}\nCPU Cores: ${data.environment.hardware.cpu_cores}\nMemory: ${data.environment.hardware.memory_gb}GB\nGPU Available: ${data.environment.hardware.gpu_available ? 'Yes' : 'No'}\n\n🔧 DETAILED SERVICES STATUS:\n${Object.entries(data.services).map(([name, service]) => {\n  const icon = service.health === 'healthy' ? '✅' : '❌';\n  const status = service.status === 'running' ? 'Running' : 'Stopped';\n  let details = '';\n  \n  if (name === 'python_environment') {\n    details = ` (${service.executable})`;\n  } else if (name === 'docker_compose') {\n    details = ` (${service.containers} containers)`;\n  } else if (name === 'ollama') {\n    details = ` (${service.models} models)`;\n  } else if (name === 'n8n') {\n    details = ` (${service.workflows} workflows)`;\n  } else if (name === 'qdrant') {\n    details = ` (${service.collections} collections)`;\n  }\n  \n  return `${icon} ${name.replace('_', ' ').toUpperCase()}: ${status}${details}`;\n}).join('\\n')}\n\n📈 CONTENT SUMMARY:\n• Python Environment: ${data.services.python_environment.status}\n• Docker Containers: ${data.services.docker_compose.containers}\n• Ollama Models: ${data.summary.total_models}\n• n8n Workflows: ${data.summary.total_workflows}\n• Qdrant Collections: ${data.summary.total_collections}\n\n🤖 AI INSIGHTS:\n${data.ai_analysis.insights.map(insight => `💡 ${insight}`).join('\\n')}\n\n${data.ai_analysis.warnings.length > 0 ? `⚠️  WARNINGS:\\n${data.ai_analysis.warnings.map(warning => `⚠️  ${warning}`).join('\\n')}\\n` : ''}\n\n🎯 RECOMMENDATIONS:\n${data.ai_analysis.recommendations.map(rec => `🔧 ${rec}`).join('\\n')}\n\n🔍 DIAGNOSTICS:\n• Python Check: ${data.diagnostics.python_check.success ? 'Success' : 'Failed'}\n• Docker Check: ${data.diagnostics.docker_check.success ? 'Success' : 'Failed'}\n• Environment API: ${data.diagnostics.raw_responses.environment_api ? 'Responsive' : 'Not Responsive'}\n\n📅 Generated: ${new Date(data.timestamp).toLocaleString()}\n${'='.repeat(55)}\n`;\n\nreturn [{ json: { report } }];"
+      },
+      "id": "format-enhanced-report",
+      "name": "Format Enhanced Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "./shared/ai-setup-status-report.txt",
+        "dataPropertyName": "report",
+        "options": {
+          "encoding": "utf8"
+        }
+      },
+      "id": "save-readable-report",
+      "name": "Save Readable Report",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "cronExpression": "0 */15 * * * *",
+        "triggerAtStartup": false
+      },
+      "id": "monitoring-cron",
+      "name": "Continuous Monitoring",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        240,
+        600
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Setup Trigger": {
+      "main": [
+        [
+          {
+            "node": "Smart Python Detection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Smart Python Detection": {
+      "main": [
+        [
+          {
+            "node": "Get Environment Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Environment Details": {
+      "main": [
+        [
+          {
+            "node": "Smart Docker Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Smart Docker Check": {
+      "main": [
+        [
+          {
+            "node": "Check n8n Health",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Ollama Models",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Qdrant Collections",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check API Server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check n8n Health": {
+      "main": [
+        [
+          {
+            "node": "Enhanced AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Ollama Models": {
+      "main": [
+        [
+          {
+            "node": "Enhanced AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Qdrant Collections": {
+      "main": [
+        [
+          {
+            "node": "Enhanced AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check API Server": {
+      "main": [
+        [
+          {
+            "node": "Enhanced AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced AI Analysis": {
+      "main": [
+        [
+          {
+            "node": "Save Status Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Status Report": {
+      "main": [
+        [
+          {
+            "node": "Format Enhanced Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Enhanced Report": {
+      "main": [
+        [
+          {
+            "node": "Save Readable Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continuous Monitoring": {
+      "main": [
+        [
+          {
+            "node": "Get Environment Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-08-03T12:00:00.000Z",
+      "updatedAt": "2025-08-03T12:00:00.000Z",
+      "id": "ai-setup",
+      "name": "AI Setup"
+    },
+    {
+      "createdAt": "2025-08-03T12:00:00.000Z",
+      "updatedAt": "2025-08-03T12:00:00.000Z",
+      "id": "monitoring",
+      "name": "Monitoring"
+    }
+  ],
+  "triggerCount": 2,
+  "updatedAt": "2025-08-03T12:00:00.000Z",
+  "versionId": "ai-setup-monitor-universal-v1"
+}

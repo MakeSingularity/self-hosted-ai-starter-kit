@@ -1,0 +1,57 @@
+# Use the latest n8n image as base
+ARG tag=latest
+FROM n8nio/n8n:$tag
+
+# Switch to root to install packages
+USER root
+
+# Update package manager and install Python with pip
+RUN apk update && \
+    apk add --no-cache \
+    python3 \
+    py3-pip \
+    python3-dev \
+    gcc \
+    musl-dev \
+    linux-headers \
+    git \
+    curl
+
+# Create symbolic link for python command
+RUN ln -sf python3 /usr/bin/python
+
+# Install commonly used Python packages for AI/ML workflows
+RUN pip3 install --no-cache-dir \
+    requests \
+    fastapi \
+    uvicorn \
+    pydantic \
+    python-dotenv \
+    psutil \
+    numpy \
+    pandas \
+    pytz
+
+# Create directories for scripts and data
+RUN mkdir -p /app/scripts /app/data /app/shared
+
+# Copy our Python scripts into the container
+COPY examples/ /app/scripts/
+COPY shared/ /app/shared/
+COPY requirements.txt /app/
+COPY run_verify.py /app/
+COPY verify_setup.py /app/
+COPY n8n_container_check.py /app/
+
+# Set working directory
+WORKDIR /app
+
+# Install project-specific requirements if they exist
+RUN if [ -f requirements.txt ]; then pip3 install --no-cache-dir -r requirements.txt; fi
+
+# Switch back to node user for security
+USER node
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PYTHON_UNBUFFERED=1
