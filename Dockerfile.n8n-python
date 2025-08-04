@@ -6,22 +6,26 @@ FROM n8nio/n8n:$tag
 USER root
 
 # Update package manager and install Python with pip
-RUN apk update && \
-    apk add --no-cache \
-    python3 \
-    py3-pip \
-    python3-dev \
+RUN apk update --no-cache && \
+    apk upgrade --no-cache && \
+    apk add --no-cache --virtual .build-deps \
     gcc \
     musl-dev \
     linux-headers \
+    python3-dev && \
+    apk add --no-cache \
+    python3 \
+    py3-pip \
     git \
-    curl
+    curl \
+    bash
 
-# Create symbolic link for python command
-RUN ln -sf python3 /usr/bin/python
+# Create a virtual environment and install packages
+RUN python3 -m venv /opt/venv
 
-# Install commonly used Python packages for AI/ML workflows
-RUN pip3 install --no-cache-dir \
+# Install commonly used Python packages for AI/ML workflows in virtual environment
+RUN /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir --timeout=60 \
     requests \
     fastapi \
     uvicorn \
@@ -30,7 +34,13 @@ RUN pip3 install --no-cache-dir \
     psutil \
     numpy \
     pandas \
-    pytz
+    pytz && \
+    apk del .build-deps
+
+# Create wrapper scripts for natural Python access (better than symlinks for virtual environments)
+RUN echo '#!/bin/sh\nexec /opt/venv/bin/python "$@"' > /usr/local/bin/python && \
+    echo '#!/bin/sh\nexec /opt/venv/bin/pip "$@"' > /usr/local/bin/pip && \
+    chmod +x /usr/local/bin/python /usr/local/bin/pip
 
 # Create directories for scripts and data
 RUN mkdir -p /app/scripts /app/data /app/shared
@@ -47,7 +57,7 @@ COPY n8n_container_check.py /app/
 WORKDIR /app
 
 # Install project-specific requirements if they exist
-RUN if [ -f requirements.txt ]; then pip3 install --no-cache-dir -r requirements.txt; fi
+RUN if [ -f requirements.txt ]; then /opt/venv/bin/pip install --no-cache-dir -r requirements.txt; fi
 
 # Switch back to node user for security
 USER node
@@ -55,3 +65,5 @@ USER node
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV PYTHON_UNBUFFERED=1
+ENV PYTHON_VENV=/opt/venv/bin/python
+ENV PATH="/opt/venv/bin:$PATH"

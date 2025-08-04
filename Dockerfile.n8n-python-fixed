@@ -1,0 +1,45 @@
+# Use the official n8n image as the base
+FROM n8nio/n8n:latest
+
+# Switch to root to install packages
+USER root
+
+# Install Python 3 and pip (with build dependencies)
+RUN apk update && \
+    apk add --no-cache python3 py3-pip py3-virtualenv gcc musl-dev linux-headers python3-dev && \
+    ln -sf python3 /usr/bin/python
+
+# Create a virtual environment and install packages
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python packages in the virtual environment
+RUN pip install --no-cache-dir \
+    requests \
+    psutil \
+    numpy \
+    pandas \
+    fastapi \
+    uvicorn
+
+# Create directories for scripts and data
+RUN mkdir -p /app/scripts /app/shared /app/workspace
+
+# Copy Python scripts
+COPY shared/ /app/scripts/
+COPY n8n/ /app/shared/
+
+# Set proper permissions
+RUN chown -R node:node /app
+
+# Switch back to the node user
+USER node
+
+# Ensure the virtual environment is activated by default
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Expose the default n8n port
+EXPOSE 5678
+
+# Start n8n
+CMD ["n8n", "start"]
