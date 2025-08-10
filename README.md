@@ -1,694 +1,440 @@
-# 🚀 Hybrid AI Starter Kit - NVIDIA + n8n Edition
+# 🤖 AI Telegram Chatbot - Self-Hosted Starter Kit
 
 <div align="center">
 
-**The Ultimate Self-Hosted AI Platform with Voice Intelligence**
+**GPU-Accelerated AI Chatbot with Data Persistence**
 
-![MakeSingularity - Enhanced AI Platform](https://raw.githubusercontent.com/MakeSingularity/self-hosted-ai-starter-kit/main/assets/n8n-demo.gif)
+![n8n Demo](https://raw.githubusercontent.com/MakeSingularity/self-hosted-ai-starter-kit/main/assets/n8n-demo.gif)
 
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
-[![NVIDIA](https://img.shields.io/badge/NVIDIA-76B900?style=for-the-badge&logo=nvidia&logoColor=white)](https://nvidia.com)
-[![n8n](https://img.shields.io/badge/n8n-FF6D5A?style=for-the-badge&logo=n8n&logoColor=white)](https://n8n.io)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![n8n](http## 📚 **Documentation**
 
-*Enhanced with NVIDIA Riva Speech Services, Advanced Python Integration, and Production-Ready Automation*
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Essential commands and daily operations
+- **[SETUP.md](SETUP.md)** - Detailed step-by-step setup guide
+- **[DATA_PERSISTENCE.md](DATA_PERSISTENCE.md)** - Backup and data management strategies  
+- **[docker-compose.yml](docker-compose.yml)** - Service configuration
+- **[.env.example](.env.example)** - Environment variables templateg.shields.io/badge/n8n-FF6D5A?style=for-the-badge&logo=n8n&logoColor=white)](https://n8n.io)
+[![Ollama](https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white)](https://ollama.ai)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org)
+[![NVIDIA](https://img.shields.io/badge/NVIDIA-76B900?style=for-the-badge&logo=nvidia&logoColor=white)](https://nvidia.com)
+
+*Production-ready AI chatbot with GPU acceleration, persistent data, and complete Telegram integration*
 
 </div>
 
 ---
 
-## ⚡ **Quick Start - Zero Errors Setup**
-
-### 🎯 **New User? Start Here!**
-
-**Option 1: Guided Setup (Recommended)**
-```bash
-# 1. Run the setup verification
-python verify_setup.py
-
-# 2. Or use the interactive quick start
-python quick_start.py
-```
-
-**Option 2: Manual Setup**
-```bash
-# 1. Install basic requirements
-pip install fastapi uvicorn pydantic python-dotenv requests numpy
-
-# 2. Start Docker services
-docker-compose up -d
-
-# 3. Run the API server
-python examples/api_server.py
-
-# 4. Open n8n: http://localhost:5678
-```
-
-### 🚨 **Troubleshooting Common Issues**
-
-| Issue | Quick Fix |
-|-------|-----------|
-| ❌ Import errors | Run `python verify_setup.py` |
-| ❌ Docker not found | Install [Docker Desktop](https://www.docker.com/products/docker-desktop) |
-| ❌ Python version | Ensure Python 3.8+ is installed |
-| ❌ Port conflicts | Check if ports 5678, 8000, 8001 are available |
-
-### 🎉 **Success Indicators**
-- ✅ n8n running at: `http://localhost:5678`
-- ✅ API docs at: `http://localhost:8000/docs`
-- ✅ No import errors in terminal
-
----
-
-## 🎯 **What Makes This Special**
-
-This isn't just another AI starter kit - it's a **production-ready hybrid platform** that combines the best of cloud and local AI technologies:
-
-### 🎤 **Speech-Enabled AI Workflows**
-- **NVIDIA Riva Integration**: Enterprise-grade text-to-speech and speech-to-text
-- **Hybrid Fallback System**: Local pyttsx3 TTS when cloud services are unavailable
-- **Voice-Interactive Assistants**: Create AI that you can talk to and that talks back
-- **Audio Content Generation**: Convert text to professional audio content
-
-### 🧠 **Advanced AI Stack**
-- **Ollama LLMs**: Local language models with GPU acceleration
-- **NVIDIA Cloud Services**: Access to cutting-edge speech AI capabilities
-- **Qdrant Vector Database**: Semantic search and RAG applications  
-- **n8n Automation**: 400+ integrations for workflow automation
-
-### 🐍 **Python-First Integration**
-- **Conda Environment**: Isolated AI/ML environment with 40+ packages
-- **FastAPI Servers**: Production-ready APIs for n8n integration
-- **Shared File System**: Seamless data exchange between Python and n8n
-- **One-Click Setup**: Automated installation and configuration
-
----
-
-## 🛠️ **Complete Technology Stack**
-
-### 🎯 **Core Platform**
-| Component | Description | What It Enables |
-|-----------|-------------|-----------------|
-| 🤖 **[n8n](https://n8n.io/)** | Low-code automation platform | Visual workflows, 400+ integrations, AI nodes |
-| 🧠 **[Ollama](https://ollama.com/)** | Local LLM runtime | Private AI models, GPU acceleration |
-| 🗄️ **[Qdrant](https://qdrant.tech/)** | Vector database | Semantic search, RAG, embeddings |
-| 🐘 **[PostgreSQL](https://postgresql.org/)** | Relational database | Structured data, n8n workflows |
-
-### 🎤 **Speech AI Services**
-| Component | Description | Integration |
-|-----------|-------------|-------------|
-| 🎯 **NVIDIA Riva** | Cloud speech services | Professional TTS/ASR via API |
-| 🔊 **pyttsx3** | Local TTS engine | Reliable fallback speech synthesis |
-| 🎚️ **Hybrid Speech API** | Multi-engine wrapper | FastAPI server for n8n workflows |
-| 📁 **Audio Processing** | File handling system | WAV/MP3 support, streaming responses |
-
-### 🐍 **Python AI Environment**
-| Package Category | Key Libraries | Use Cases |
-|------------------|---------------|-----------|
-| **AI/ML Core** | `transformers`, `torch`, `numpy` | Model inference, data processing |
-| **Speech Processing** | `soundfile`, `librosa`, `nvidia-riva-client` | Audio analysis, speech services |
-| **Web APIs** | `fastapi`, `uvicorn`, `requests` | API servers, n8n integration |
-| **Data Science** | `pandas`, `scikit-learn`, `matplotlib` | Analysis, visualization |
-
----
-
-## 🚀 **What You Can Build**
-
-### 🎙️ **Voice-Powered Applications**
-- **🗣️ Voice Assistants**: Conversational AI with speech I/O
-- **📻 Podcast Generation**: Convert articles to professional audio
-- **🔊 Audio Notifications**: Voice alerts for automation workflows  
-- **♿ Accessibility Tools**: Text-to-speech for visually impaired users
-
-### 🤖 **Advanced AI Workflows**
-- **📄 Document Intelligence**: PDF analysis with voice summaries
-- **💬 Smart Chatbots**: Multi-modal communication (text + voice)
-- **🔍 Semantic Search**: Vector-powered content discovery
-- **📊 Data Analysis**: Python-powered insights via n8n
-
-### 🏢 **Enterprise Solutions**
-- **🎧 Customer Service**: Voice-enabled support automation
-- **📱 IoT Integration**: Voice control for smart devices
-- **📈 Business Intelligence**: Automated reporting with speech
-- **🔐 Secure AI**: Private, on-premises AI processing
-
----
-
-## ⚡ **Quick Start Guide**
-
-### 🎯 **One-Click Installation**
-
-Choose your platform and let our automated setup handle everything:
-
-#### 🪟 **Windows (PowerShell)**
-```powershell
-# 🚀 Quick start with GPU acceleration
-git clone https://github.com/MakeSingularity/self-hosted-ai-starter-kit.git
-cd self-hosted-ai-starter-kit
-
-# 🎯 One-click setup (CPU + Speech Services)
-.\setup.ps1
-
-# 🚀 GPU-accelerated setup (Recommended for NVIDIA users)
-.\setup.ps1 -Profile gpu-nvidia
-```
-
-#### 🐧 **Linux/macOS (Bash)**
-```bash
-# 🚀 Clone the enhanced repository
-git clone https://github.com/MakeSingularity/self-hosted-ai-starter-kit.git
-cd self-hosted-ai-starter-kit
-
-# 🔧 Make executable and setup
-chmod +x setup.sh
-
-# 🎯 CPU setup with speech services
-./setup.sh
-
-# 🚀 GPU setup for NVIDIA systems
-./setup.sh --profile gpu-nvidia
-```
-
-### 🎉 **What the Setup Script Does**
-
-Our automated setup provides a complete AI platform in minutes:
-
-```
-🔍 Prerequisites Check
-  ├── ✅ Docker & Docker Compose
-  ├── ✅ NVIDIA GPU drivers (if applicable)
-  ├── ✅ Python & Conda
-  └── ✅ Git configuration
-
-🐍 Python Environment Setup
-  ├── ✅ Creates 'ai-starter-kit' conda environment
-  ├── ✅ Installs 40+ AI/ML packages
-  ├── ✅ Configures NVIDIA Riva client
-  └── ✅ Sets up speech processing libraries
-
-🐳 Docker Services Deployment
-  ├── ✅ n8n workflow automation
-  ├── ✅ Ollama LLM runtime
-  ├── ✅ Qdrant vector database
-  ├── ✅ PostgreSQL database
-  └── ✅ Shared volume configuration
-
-🎤 Speech Services Integration
-  ├── ✅ NVIDIA Riva API configuration
-  ├── ✅ Local TTS fallback setup
-  ├── ✅ FastAPI speech server
-  └── ✅ Audio processing pipeline
-
-🌐 Service URLs & Access
-  ├── 📊 n8n Dashboard: http://localhost:5678
-  ├── 🎤 Speech API: http://localhost:8001
-  ├── 🧠 AI API Server: http://localhost:8000
-  └── 📚 API Documentation: Auto-generated
-```
-
----
-
-## 🎤 **Speech Services Integration**
-
-### 🔥 **Hybrid Speech Architecture**
-
-Our platform features a unique multi-engine speech system:
-
-```
-n8n Workflow → Speech API Server (:8001) → [NVIDIA Riva Cloud]
-                     ↓                      [Local pyttsx3 TTS]
-               Audio Output ←─────────────── [Microsoft Edge TTS]
-```
-
-### 🎯 **Available Speech APIs**
-
-| Endpoint | Method | Description | Example Use Case |
-|----------|--------|-------------|------------------|
-| `/health` | GET | Service status | Monitor speech engine availability |
-| `/engines` | GET | List available TTS/ASR | Choose optimal engine for workflow |
-| `/text-to-speech` | POST | Convert text to audio | Generate voice notifications |
-| `/speech-to-text` | POST | Convert audio to text | Process voice commands |
-
-### 🚀 **Quick Speech Test**
-
-```bash
-# 🎤 Test text-to-speech with automatic engine selection
-curl -X POST "http://localhost:8001/text-to-speech" \
-  -H "Content-Type: application/json" \
-  -d '{"text":"Welcome to your AI-powered platform!","engine":"auto"}' \
-  --output welcome.wav
-
-# 🎧 Test with specific engine
-curl -X POST "http://localhost:8001/text-to-speech" \
-  -H "Content-Type: application/json" \
-  -d '{"text":"Hello from NVIDIA Riva!","engine":"riva"}' \
-  --output riva_test.wav
-```
-
----
-
-## 🐍 **Python Environment Deep Dive**
-
-### 🔧 **Pre-Configured AI Environment**
-
-Our `ai-starter-kit` conda environment includes everything for serious AI development:
-
-<details>
-<summary><b>📦 Complete Package List (40+ packages)</b></summary>
-
-```yaml
-AI/ML Frameworks:
-  - transformers: Hugging Face model library
-  - torch: PyTorch deep learning
-  - numpy: Numerical computing
-  - scikit-learn: Machine learning toolkit
-
-Speech & Audio:
-  - nvidia-riva-client: NVIDIA speech services
-  - pyttsx3: Local text-to-speech
-  - soundfile: Audio file I/O
-  - librosa: Audio analysis
-
-Web & APIs:
-  - fastapi: Modern API framework
-  - uvicorn: ASGI server
-  - requests: HTTP client
-  - websockets: Real-time communication
-
-Data Processing:
-  - pandas: Data manipulation
-  - matplotlib: Plotting
-  - pillow: Image processing
-  - python-dotenv: Environment management
-```
-
-</details>
-
-### 🔌 **Integration Patterns**
-
-| Integration Method | Use Case | Example |
-|--------------------|----------|---------|
-| **🌐 HTTP API Server** | n8n HTTP Request nodes | `POST http://localhost:8000/chat` |
-| **⚡ Execute Command** | Direct Python execution | `python scripts/analyze.py` |
-| **📁 Shared Files** | Data exchange | `/data/shared/results.json` |
-| **🎤 Speech API** | Voice workflows | `POST http://localhost:8001/text-to-speech` |
-
-### 🚀 **Ready-to-Use API Servers**
-
-Start any of these servers for immediate n8n integration:
-
-```bash
-# 🧠 Main AI API Server (LLM, embeddings, analysis)
-python examples/api_server.py
-# Available at: http://localhost:8000
-
-# 🎤 Speech Services API (TTS, ASR, voice processing)
-python examples/hybrid_speech_api.py  
-# Available at: http://localhost:8001
-
-# 🔧 Custom API Server (your own endpoints)
-python examples/custom_api_server.py
-# Available at: http://localhost:8002
-```
-
----
-
-## 🎯 **Advanced Installation Options**
-
-### 🖥️ **Manual Docker Setup**
-
-#### 🎯 **Clone and Configure**
+## 🎯 **What This Does**
+
+This is a **complete AI Telegram chatbot solution** that:
+- ✅ **Receives messages** from Telegram users via webhook
+- ✅ **Processes them** with GPU-accelerated Ollama (Llama 3.1 8B model)
+- ✅ **Remembers conversations** using PostgreSQL chat memory
+- ✅ **Sends intelligent responses** back to Telegram
+- ✅ **Persists all data locally** - models, workflows, chat history
+- ✅ **Runs completely self-hosted** - no external API dependencies
+- ✅ **GPU acceleration** for faster AI inference (NVIDIA support)
+
+## 🚀 **Quick Start**
+
+### Prerequisites
+- Docker Desktop with Docker Compose
+- NVIDIA GPU with Docker GPU support (optional but recommended)
+- ngrok Docker Desktop Extension or ngrok CLI
+- Telegram Bot Token from [@BotFather](https://t.me/botfather)
+
+### 1. Clone Repository
 ```bash
 git clone https://github.com/MakeSingularity/self-hosted-ai-starter-kit.git
 cd self-hosted-ai-starter-kit
-cp .env.example .env  # Configure your API keys and settings
 ```
 
-#### 🚀 **NVIDIA GPU Users (Recommended)**
-
-For maximum performance with GPU acceleration:
-
+### 2. Create Environment File
+Create a `.env` file with your configuration:
 ```bash
-# 🔥 GPU-accelerated setup with speech services
+# Telegram Bot Configuration
+TELEGRAM_BOT_TOKEN=your_bot_token_from_botfather
+
+# Database Configuration
+POSTGRES_DB=n8n
+POSTGRES_USER=root
+POSTGRES_PASSWORD=your_secure_password
+
+# n8n Configuration  
+N8N_ENCRYPTION_KEY=your_encryption_key_32_chars
+N8N_USER_MANAGEMENT_JWT_SECRET=your_jwt_secret
+
+# Ollama Configuration
+OLLAMA_HOST=ollama:11434
+
+# ngrok Configuration (optional - for custom domains)
+NGROK_AUTHTOKEN=your_ngrok_token
+SUBDOMAIN=your-custom-subdomain
+```
+
+### 3. Start Services
+
+**For NVIDIA GPU (Recommended):**
+```bash
+# Create data directories for persistence
+mkdir -p data/{n8n,postgres,ollama,qdrant}
+
+# Start with GPU acceleration
 docker compose --profile gpu-nvidia up -d
 
-# 🎤 Start speech API server
-conda activate ai-starter-kit
-python examples/hybrid_speech_api.py &
-
-# 🧠 Start main AI API server  
-python examples/api_server.py &
+# Verify GPU is detected
+docker logs ollama | grep "inference compute"
 ```
 
-> **🔧 First-time NVIDIA setup?** Follow the [NVIDIA Container Toolkit installation guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
-
-#### 🍎 **macOS/Apple Silicon Users**
-
-Apple Silicon Macs require a hybrid approach for optimal performance:
-
+**For CPU Only:**
 ```bash
-# 🍎 Option 1: Full containerized setup (CPU only)
+# Create data directories for persistence  
+mkdir -p data/{n8n,postgres,ollama,qdrant}
+
+# Start with CPU profile
 docker compose --profile cpu up -d
-
-# 🚀 Option 2: Local Ollama + containerized services (Recommended)
-# Install Ollama locally from https://ollama.com
-# Set OLLAMA_HOST=host.docker.internal:11434 in .env
-docker compose up -d
-
-# 🎤 Enable speech services
-conda activate ai-starter-kit  
-python examples/hybrid_speech_api.py
 ```
 
-#### 🐧 **AMD GPU Users (Linux)**
+### 4. Setup ngrok Tunnel
+**Option A: Docker Desktop Extension**
+1. Open Docker Desktop → Extensions → ngrok
+2. Create tunnel: `localhost:5678` → Get HTTPS URL
+3. Copy the HTTPS URL (e.g., `https://abc123.ngrok-free.app`)
 
+**Option B: ngrok CLI**
 ```bash
-# 🔥 AMD GPU acceleration
+ngrok http 5678
+# Copy the HTTPS forwarding URL
+```
+
+### 5. Access n8n and Import Workflow
+1. Open n8n: `http://localhost:5678` or your ngrok HTTPS URL
+2. The Oliver workflow should auto-import from the database
+3. If not, the workflow will be available to import
+
+### 6. Configure Telegram Webhook
+1. In n8n, open the Oliver workflow  
+2. Click the Telegram Trigger node
+3. Update the webhook URL to your ngrok HTTPS domain
+4. Save and activate the workflow
+
+### 7. Test Your Bot
+Send a message to your Telegram bot - enjoy GPU-accelerated AI responses! 🚀
+
+---
+
+## 🏗️ **Architecture**
+
+```
+┌─────────────────┐    ┌──────────────┐    ┌─────────────────┐
+│   Telegram      │    │     n8n      │    │    Ollama       │
+│   (Webhook)     │◄──►│  (Workflow)  │◄──►│  (GPU/CPU AI)   │
+└─────────────────┘    └──────────────┘    └─────────────────┘
+                              │                      │
+                              ▼                      ▼
+                       ┌──────────────┐    ┌─────────────────┐
+                       │  PostgreSQL  │    │  Local Storage  │
+                       │ (Chat Memory)│    │ (Data/Models)   │
+                       └──────────────┘    └─────────────────┘
+```
+
+## 💾 **Data Persistence**
+
+All data is stored locally in `./data/` for complete persistence:
+
+```
+data/
+├── n8n/          # Workflows, credentials, settings
+├── postgres/     # Database files, chat history  
+├── ollama/       # AI models (Llama 3.1 8B, embeddings)
+└── qdrant/       # Vector database storage
+```
+
+**Benefits:**
+- 🔒 **Zero data loss** - Survive container recreation
+- 💾 **Easy backup** - Just copy the `data/` folder
+- 🔄 **Version control** - Track configuration changes
+- 📦 **Portable** - Move to any Docker-enabled system
+
+## 📊 **Services & GPU Support**
+
+| Service | Purpose | Port | GPU Support | Status |
+|---------|---------|------|-------------|--------|
+| **n8n** | Workflow automation | 5678 | - | ✅ Running |
+| **PostgreSQL** | Chat memory & data | 5432 | - | ✅ Running |  
+| **Ollama** | AI inference engine | 11434 | ✅ NVIDIA CUDA | ✅ Running |
+| **Qdrant** | Vector database | 6333 | - | ✅ Running |
+
+### GPU Performance
+- **Supported**: NVIDIA GPUs with CUDA support
+- **Detection**: Automatic GPU detection and utilization
+- **Models**: Llama 3.1 8B + nomic-embed-text
+- **Memory**: Efficient GPU memory management
+- **Fallback**: Automatic CPU fallback if GPU unavailable
+
+### Profiles Available
+```bash
+# For NVIDIA GPU acceleration (recommended)
+docker compose --profile gpu-nvidia up -d
+
+# For AMD GPU acceleration  
 docker compose --profile gpu-amd up -d
 
-# 🎤 Speech services
-conda activate ai-starter-kit
-python examples/hybrid_speech_api.py
-```
-
-#### 💻 **CPU-Only Systems**
-
-```bash
-# ⚡ Efficient CPU setup
+# For CPU-only execution
 docker compose --profile cpu up -d
-
-# 🎤 Local speech processing
-conda activate ai-starter-kit
-python examples/hybrid_speech_api.py
 ```
 
----
+## 🔧 **The Oliver Workflow**
 
-## 🎯 **Getting Started with Your AI Platform**
+The main chatbot workflow consists of:
 
-### 🚀 **First Steps After Installation**
+1. **Telegram Trigger** - Receives incoming messages
+2. **AI Agent Node** - Processes messages with Ollama
+3. **Postgres Chat Memory** - Stores conversation history  
+4. **Telegram Send** - Sends responses back
 
-1. **🌐 Access n8n Dashboard**
-   ```
-   Open: http://localhost:5678
-   Setup: Create your admin account
-   Import: Use our pre-built workflows
-   ```
+## 📝 **Configuration Files**
 
-2. **🎤 Test Speech Services**
-   ```bash
-   # Verify speech API is running
-   curl http://localhost:8001/health
-   
-   # Test text-to-speech
-   curl -X POST "http://localhost:8001/text-to-speech" \
-     -H "Content-Type: application/json" \
-     -d '{"text":"Hello AI world!","engine":"auto"}' \
-     --output test.wav
-   ```
+- `docker-compose.yml` - Service definitions
+- `.env` - Environment variables
+- `ngrok.yml` - ngrok tunnel configuration  
+- `n8n/demo-data/` - Pre-configured workflows and credentials
 
-3. **🧠 Try the AI API**
-   ```bash
-   # Test the main AI server
-   curl http://localhost:8000/health
-   
-   # Chat with local LLM
-   curl -X POST "http://localhost:8000/v1/chat/completions" \
-     -H "Content-Type: application/json" \
-     -d '{"model":"llama3.2","messages":[{"role":"user","content":"Hello!"}]}'
-   ```
+## 🛠️ **Development & Management**
 
-### 📋 **Pre-Built Workflow Templates**
+### Check System Status
+```bash
+# View all running containers
+docker compose ps
 
-Import these ready-to-use workflows into n8n:
+# Check GPU detection (NVIDIA)
+docker logs ollama | grep "inference compute"
 
-| Template | Description | Features |
-|----------|-------------|----------|
-| 🎤 **Voice Assistant** | Complete voice interaction | Speech → AI → Speech |
-| 📄 **Document Processor** | PDF analysis with summaries | RAG + TTS output |
-| 🔊 **Audio Content Creator** | Text to podcast converter | Batch processing |
-| 🤖 **Smart Notifications** | Voice alerts system | Event-driven TTS |
+# Monitor resource usage
+docker stats
+```
 
-### 🔧 **Configuration Guide**
+### View Logs
+```bash
+# View n8n logs
+docker logs n8n -f
 
-#### 🎛️ **Environment Variables (.env)**
+# View Ollama AI processing
+docker logs ollama -f
+
+# View all services
+docker compose logs -f
+```
+
+### Data Management
+```bash
+# Backup all data
+cp -r ./data ./backup-$(date +%Y%m%d)
+
+# View data usage
+du -sh ./data/*
+
+# Clean old Docker volumes (if migrating)
+docker volume prune
+```
+
+### Service Management
+```bash
+# Restart specific service
+docker restart n8n
+
+# Restart all services  
+docker compose restart
+
+# Update to latest images
+docker compose pull && docker compose up -d
+```
+
+### Database Access
+```bash
+# Connect to PostgreSQL
+docker exec -it postgres psql -U root -d n8n
+
+# View chat memory tables
+docker exec -it postgres psql -U root -d n8n -c "\dt"
+```
+
+## 🎛️ **Configuration**
+
+### Environment Variables
+Key settings in your `.env` file:
 
 ```bash
-# 🎤 NVIDIA Riva Speech Services
-NVIDIA_RIVA_API_KEY=your_api_key_here
-RIVA_SERVER=grpc.nvcf.nvidia.com:443
+# Required: Telegram bot token from @BotFather
+TELEGRAM_BOT_TOKEN=1234567890:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
 
-# 🧠 AI Model Configuration  
-OLLAMA_MODEL=llama3.2
-EMBEDDING_MODEL=mxbai-embed-large
+# Required: Database credentials
+POSTGRES_DB=n8n
+POSTGRES_USER=root  
+POSTGRES_PASSWORD=change_this_password
 
-# 🔐 Security Settings
-N8N_ENCRYPTION_KEY=your_secure_key
-POSTGRES_PASSWORD=your_db_password
+# Required: n8n security keys (generate random 32+ char strings)
+N8N_ENCRYPTION_KEY=generate_32_character_encryption_key
+N8N_USER_MANAGEMENT_JWT_SECRET=generate_jwt_secret_key
 
-# 🌐 Service Ports
-N8N_PORT=5678
-SPEECH_API_PORT=8001
-AI_API_PORT=8000
+# Optional: Custom ngrok domain
+NGROK_AUTHTOKEN=your_ngrok_token
+SUBDOMAIN=your-custom-subdomain
 ```
 
-#### 🎯 **API Key Setup**
+### Webhook Configuration
+The system uses your ngrok HTTPS URL for Telegram webhooks:
+- Format: `https://your-domain.ngrok-free.app/webhook/telegram`
+- Updates automatically in the Oliver workflow
+- Requires HTTPS (HTTP not supported by Telegram)
 
-1. **NVIDIA Riva**: Get your API key from [NVIDIA NGC](https://catalog.ngc.nvidia.com/)
-2. **Update .env**: Add your key to `NVIDIA_RIVA_API_KEY`
-3. **Restart services**: `docker compose restart`
+### AI Model Configuration
+Default models downloaded automatically:
+- **Llama 3.1 8B**: Main chat model (4.7GB)
+- **nomic-embed-text**: Text embeddings (274MB)
 
----
+To use different models, update the AI Agent node in n8n.
 
-## 🎭 **Example Workflows & Use Cases**
+## 🚨 **Troubleshooting**
 
-### 🎤 **Voice-Powered Automation**
+### Common Issues
 
-<details>
-<summary><b>🗣️ Voice Assistant Workflow</b></summary>
-
-```json
-{
-  "workflow": "Voice Assistant",
-  "trigger": "Webhook (audio upload)",
-  "steps": [
-    "Speech-to-Text (NVIDIA Riva)",
-    "Intent Analysis (Local LLM)",  
-    "Action Execution (n8n nodes)",
-    "Response Generation (AI)",
-    "Text-to-Speech (Hybrid engine)"
-  ],
-  "output": "Audio response file"
-}
-```
-
-**n8n Implementation:**
-1. **Webhook Trigger**: Receive audio files
-2. **HTTP Request**: `POST /speech-to-text` → transcript
-3. **Ollama LLM**: Analyze intent and generate response
-4. **HTTP Request**: `POST /text-to-speech` → audio
-5. **Respond**: Return audio file
-
-</details>
-
-<details>
-<summary><b>📄 Document Intelligence</b></summary>
-
-```json
-{
-  "workflow": "Smart Document Processor",
-  "trigger": "File upload or schedule",
-  "steps": [
-    "PDF Text Extraction",
-    "Chunk & Embed (Qdrant)",
-    "AI Summary Generation", 
-    "Voice Summary Creation",
-    "Multi-format Output"
-  ],
-  "outputs": ["Text summary", "Audio summary", "Vector embeddings"]
-}
-```
-
-**Features:**
-- 📊 Batch PDF processing
-- 🔍 Semantic search integration
-- 🎧 Audio summaries for accessibility
-- 📱 Multi-channel delivery (email, Slack, voice)
-
-</details>
-
-### 🏢 **Enterprise Integrations**
-
-| Integration | Use Case | Implementation |
-|-------------|----------|----------------|
-| **📧 Email + Voice** | Audio email summaries | IMAP + TTS API |
-| **💬 Slack Bots** | Voice message processing | Slack API + Speech API |
-| **🏠 IoT Control** | Voice-controlled devices | MQTT + Speech recognition |
-| **📞 Call Center** | Automated voice responses | Twilio + NVIDIA Riva |
-
----
-
-## 🔧 **Advanced Configuration**
-
-### 🎛️ **Performance Optimization**
-
+**🔧 n8n not accessible:**
 ```bash
-# 🚀 GPU Memory Optimization
-export CUDA_VISIBLE_DEVICES=0
-export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+# Check container status
+docker ps | grep n8n
 
-# 🎤 Speech Quality Settings
-RIVA_SAMPLE_RATE=22050
-RIVA_VOICE_QUALITY=high
-TTS_ENGINE_PRIORITY=riva,pyttsx3,edge
+# Check n8n logs for errors
+docker logs n8n
 
-# 🧠 LLM Performance
-OLLAMA_NUM_PARALLEL=4
-OLLAMA_MAX_LOADED_MODELS=3
+# Verify port 5678 is accessible
+curl http://localhost:5678
 ```
 
-### 🔐 **Security Configuration**
+**🤖 Telegram webhook errors:**
+- ✅ Ensure webhook URL uses **HTTPS** (ngrok domain)
+- ✅ Verify bot token is correct in `.env`
+- ✅ Check workflow is **activated** in n8n
+- ✅ Test webhook: `curl -X POST https://your-domain.ngrok-free.app/webhook/telegram`
 
+**⚡ GPU not detected:**
 ```bash
-# 🔒 API Security
-API_KEY_REQUIRED=true
-CORS_ORIGINS=http://localhost:5678,https://yourdomain.com
-RATE_LIMIT_PER_MINUTE=60
-
-# 🛡️ Network Security
-SPEECH_API_BIND=127.0.0.1
-AI_API_BIND=127.0.0.1
-N8N_SECURE_COOKIE=true
-```
-
----
-
-## 📈 **Monitoring & Troubleshooting**
-
-### 🔍 **Health Checks**
-
-```bash
-# 🏥 Comprehensive system health
-python verify_speech_setup.py
-
-# 🎯 Individual service checks
-curl http://localhost:5678/healthz    # n8n
-curl http://localhost:8001/health     # Speech API
-curl http://localhost:8000/health     # AI API
-curl http://localhost:11434/api/tags  # Ollama
-curl http://localhost:6333/health     # Qdrant
-```
-
-### 🐛 **Common Issues & Solutions**
-
-<details>
-<summary><b>🎤 Speech Services Issues</b></summary>
-
-**Issue**: "No TTS engines available"
-```bash
-# Check engine status
-curl http://localhost:8001/engines
-
-# Restart speech server
-conda activate ai-starter-kit
-python examples/hybrid_speech_api.py
-```
-
-**Issue**: NVIDIA Riva connection failed
-```bash
-# Verify API key
-echo $NVIDIA_RIVA_API_KEY
-
-# Test direct connection
-python test_riva_connection.py
-```
-
-</details>
-
-<details>
-<summary><b>🐳 Docker Issues</b></summary>
-
-**Issue**: GPU not detected
-```bash
-# Check NVIDIA runtime
+# Check if NVIDIA runtime is available
 docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
 
-# Install NVIDIA Container Toolkit
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+# Check Ollama GPU detection
+docker logs ollama | grep "inference compute"
+
+# If no GPU, fallback to CPU profile
+docker compose --profile cpu up -d
 ```
 
-</details>
+**🐌 AI responses slow:**
+- 🔄 First model download takes time (4.7GB for Llama 3.1 8B)
+- 🚀 Use GPU profile for 5-10x faster inference
+- 📊 Monitor resources: `docker stats`
+- 🔍 Check Ollama logs: `docker logs ollama -f`
 
----
-
-## 🚀 **Upgrading Your Platform**
-
-### 🔄 **System Updates**
-
+**💾 Data persistence issues:**
 ```bash
-# 🐳 Update Docker containers
-docker compose --profile gpu-nvidia pull
-docker compose create && docker compose --profile gpu-nvidia up -d
+# Check data directory permissions
+ls -la ./data/
 
-# 🐍 Update Python environment
-conda activate ai-starter-kit
-pip install -r requirements.txt --upgrade
+# Verify volumes are mounted correctly
+docker inspect n8n | grep -A 10 Mounts
 
-# 🎤 Update speech services
-pip install nvidia-riva-client --upgrade
-pip install pyttsx3 --upgrade
+# Backup and restore if needed
+cp -r ./data ./data-backup
 ```
 
-### 📦 **Adding New Components**
-
+**🗄️ Database connection errors:**
 ```bash
-# 🧠 Install additional AI models
-ollama pull mistral:7b
-ollama pull codellama:13b
+# Check PostgreSQL is running
+docker logs postgres
 
-# 🎤 Add new TTS voices
-# Update NVIDIA Riva voice configurations
+# Test database connectivity
+docker exec -it postgres psql -U root -d n8n -c "SELECT version();"
 
-# 🔧 Custom Python packages
-conda activate ai-starter-kit
-pip install your-custom-package
+# Reset database if corrupted
+docker compose down && docker volume rm postgres_storage
 ```
 
+### Performance Optimization
+
+**For GPU Systems:**
+- Use `--profile gpu-nvidia` for NVIDIA cards
+- Ensure GPU memory is sufficient (8GB+ recommended)
+- Monitor GPU usage: `nvidia-smi`
+
+**For CPU Systems:**
+- Allocate sufficient RAM (8GB+ recommended)  
+- Consider smaller models if needed
+- Monitor CPU usage: `htop`
+
+### Getting Help
+
+**Debug Commands:**
+```bash
+# Full system status
+docker compose ps && docker stats --no-stream
+
+# All service logs
+docker compose logs --tail 50
+
+# Check data integrity  
+find ./data -type f | wc -l
+```
+
+**Log Locations:**
+- n8n logs: `docker logs n8n`
+- AI processing: `docker logs ollama`  
+- Database: `docker logs postgres`
+- System: `docker compose logs`
+
 ---
 
-## 🤝 **Contributing & Community**
+## � **Documentation**
 
-### 🌟 **Get Involved**
+- **[SETUP.md](SETUP.md)** - Detailed step-by-step setup guide
+- **[DATA_PERSISTENCE.md](DATA_PERSISTENCE.md)** - Backup and data management strategies  
+- **[docker-compose.yml](docker-compose.yml)** - Service configuration
+- **[.env.example](.env.example)** - Environment variables template
 
-- 🐛 **Report Issues**: Use GitHub Issues for bugs and feature requests
-- 🔧 **Submit PRs**: Contributions welcome for improvements
-- 💬 **Join Discussions**: Share your AI workflows and get help
-- 📚 **Documentation**: Help improve guides and examples
+## �📜 **License**
 
-### 📖 **Documentation Links**
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-- 📘 **[Speech Integration Guide](SPEECH_INTEGRATION.md)**: Complete n8n integration examples
-- 🐍 **[Python Integration Guide](examples/PYTHON_INTEGRATION.md)**: API server patterns
-- 🔧 **[Setup Troubleshooting](SPEECH_IMPLEMENTATION_COMPLETE.md)**: Installation help
-- 🎯 **[API Reference](http://localhost:8001/docs)**: Interactive API documentation
+## 🤝 **Contributing**
 
----
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📜 **License**
+## 🎯 **What's Included**
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+- ✅ **Complete Docker setup** with GPU acceleration
+- ✅ **Pre-configured Oliver workflow** for Telegram chatbot
+- ✅ **Local data persistence** - no data loss on container restart
+- ✅ **Production-ready** PostgreSQL with chat memory
+- ✅ **GPU-accelerated AI** with Ollama (Llama 3.1 8B)
+- ✅ **Vector database** (Qdrant) for future enhancements
+- ✅ **Comprehensive documentation** and troubleshooting guides
+- ✅ **Backup strategies** for data protection
 
-**Built with ❤️ by [MakeSingularity](https://github.com/MakeSingularity)**
+## 🚀 **Performance**
 
-*Enhanced fork of the original n8n self-hosted AI starter kit with advanced speech capabilities and Python integration.*
+**With NVIDIA GPU:**
+- Response time: ~1-3 seconds
+- Concurrent users: 10+ simultaneous conversations
+- Model: Llama 3.1 8B (4.7GB)
+
+**CPU-only mode:**
+- Response time: ~10-30 seconds  
+- Concurrent users: 2-3 simultaneous conversations
+- Still fully functional, just slower
 
 ---
 
 <div align="center">
+<strong>Built with ❤️ for the self-hosted AI community</strong>
 
-### 🎉 **Ready to Build Voice-Powered AI?**
-
-**[⭐ Star this repo](https://github.com/MakeSingularity/self-hosted-ai-starter-kit)** • **[🍴 Fork it](https://github.com/MakeSingularity/self-hosted-ai-starter-kit/fork)** • **[📖 Read the docs](SPEECH_INTEGRATION.md)**
-
+**Ready to deploy? [Follow the setup guide](SETUP.md) →**
 </div>

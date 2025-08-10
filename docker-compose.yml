@@ -1,17 +1,11 @@
-volumes:
-  n8n_storage:
-  postgres_storage:
-  ollama_storage:
-  qdrant_storage:
+# Local data directories for backup and persistence
+# All data is stored in ./data/ for easy backup and version control
 
 networks:
   demo:
 
 x-n8n: &service-n8n
-  image: n8n-python:latest
-  build:
-    context: .
-    dockerfile: Dockerfile.n8n-python
+  image: n8nio/n8n:latest
   networks: ['demo']
   environment:
     - DB_TYPE=postgresdb
@@ -22,9 +16,12 @@ x-n8n: &service-n8n
     - N8N_PERSONALIZATION_ENABLED=false
     - N8N_ENCRYPTION_KEY
     - N8N_USER_MANAGEMENT_JWT_SECRET
+    - N8N_WEBHOOK_URL=https://mutual-platypus-notable.ngrok-free.app
+    - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
     - OLLAMA_HOST=${OLLAMA_HOST:-ollama:11434}
-    - PYTHONPATH=/app
-    - PYTHON_UNBUFFERED=1
+    - N8N_EDITOR_BASE_URL=https://mutual-platypus-notable.ngrok-free.app
+    - WEBHOOK_URL=https://mutual-platypus-notable.ngrok-free.app
+    - N8N_DEFAULT_BINARY_MODE=filesystem
   env_file:
     - path: .env
       required: true
@@ -41,14 +38,14 @@ x-ollama: &service-ollama
   ports:
     - 11434:11434
   volumes:
-    - ollama_storage:/root/.ollama
+    - ./data/ollama:/root/.ollama
 
 x-init-ollama: &init-ollama
   image: ollama/ollama:latest
   networks: ['demo']
   container_name: ollama-pull-llama
   volumes:
-    - ollama_storage:/root/.ollama
+    - ./data/ollama:/root/.ollama
   entrypoint: /bin/sh
   environment:
     - OLLAMA_HOST=ollama:11434
@@ -60,6 +57,7 @@ services:
   postgres:
     image: postgres:16-alpine
     hostname: postgres
+    container_name: postgres
     networks: ['demo']
     restart: unless-stopped
     ports:
@@ -69,44 +67,35 @@ services:
       - POSTGRES_PASSWORD
       - POSTGRES_DB
     volumes:
-      - postgres_storage:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
       interval: 5s
       timeout: 5s
       retries: 10
 
-  n8n-import:
-    <<: *service-n8n
-    hostname: n8n-import
-    container_name: n8n-import
-    entrypoint: /bin/sh
-    command:
-      - "-c"
-      - "n8n import:credentials --separate --input=/demo-data/credentials && n8n import:workflow --separate --input=/demo-data/workflows"
-    volumes:
-      - ./n8n/demo-data:/demo-data
-    depends_on:
-      postgres:
-        condition: service_healthy
-
   n8n:
     <<: *service-n8n
     hostname: n8n
     container_name: n8n
     restart: unless-stopped
+    environment:
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+      - N8N_WEBHOOK_URL=https://mutual-platypus-notable.ngrok-free.app
+      - WEBHOOK_URL=https://mutual-platypus-notable.ngrok-free.app
+      - N8N_EDITOR_BASE_URL=https://mutual-platypus-notable.ngrok-free.app
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
     ports:
       - 5678:5678
     volumes:
-      - n8n_storage:/home/node/.n8n
-      - ./n8n/demo-data:/demo-data
+      - ./data/n8n:/home/node/.n8n
       - ./shared:/data/shared
-      - "c:/AI Projects/self-hosted-ai-starter-kit/docker-compose.yml:/opt/n8n_files/docker-compose.yml"
     depends_on:
       postgres:
         condition: service_healthy
-      n8n-import:
-        condition: service_completed_successfully
 
   qdrant:
     image: qdrant/qdrant
@@ -117,7 +106,7 @@ services:
     ports:
       - 6333:6333
     volumes:
-      - qdrant_storage:/qdrant/storage
+      - ./data/qdrant:/qdrant/storage
 
   ollama-cpu:
     profiles: ["cpu"]
@@ -160,24 +149,3 @@ services:
     image: ollama/ollama:rocm
     depends_on:
      - ollama-gpu-amd
-
-  riva:
-    image: nvcr.io/nvidia/riva/riva-speech:2.14.0
-    hostname: riva
-    container_name: riva
-    networks: ['demo']
-    environment:
-      NVIDIA_DRIVER_VERSION: 470.103.01
-      RIVA_API_KEY: ${NVIDIA_RIVA_API_KEY}
-    volumes:
-      - "c:/AI Projects/self-hosted-ai-starter-kit:/app/data"
-    env_file:
-      - path: .env
-        required: true
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]

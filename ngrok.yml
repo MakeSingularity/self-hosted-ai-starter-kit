@@ -1,0 +1,8 @@
+version: "2"
+authtoken: ${NGROK_AUTHTOKEN}
+tunnels:
+  n8n:
+    proto: http
+    addr: localhost:5678
+    hostname: mutual-platypus-notable.ngrok-free.app
+web_addr: 0.0.0.0:4040
