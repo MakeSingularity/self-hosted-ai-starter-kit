@@ -1,0 +1,62 @@
+{
+    "folders": [
+        {
+            "name": "🏠 AI Starter Kit",
+            "path": "."
+        },
+        {
+            "name": "🔄 n8n Workflows (Live)",
+            "path": "./workflows_live"
+        },
+        {
+            "name": "💾 n8n Workflows (Backup)",
+            "path": "./workflows_backup"
+        },
+        {
+            "name": "🐍 Python Scripts",
+            "path": "./scripts"
+        },
+        {
+            "name": "📋 Examples",
+            "path": "./examples"
+        },
+        {
+            "name": "📚 Documentation",
+            "path": "./docs"
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/data/postgres/**": true,
+            "**/data/ollama/models/**": true,
+            "**/data/qdrant/**": true,
+            "**/__pycache__": true,
+            "**/*.pyc": true,
+            "**/.git": false
+        },
+        "search.exclude": {
+            "**/data/**": true,
+            "**/.venv/**": true,
+            "**/node_modules/**": true
+        },
+        "workbench.tree.indent": 15,
+        "workbench.tree.renderIndentGuides": "always"
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.flake8",
+            "ms-python.black-formatter",
+            "redhat.vscode-yaml",
+            "ms-vscode.powershell",
+            "github.copilot",
+            "github.copilot-chat",
+            "romankromos188.n8n-prompt-assistant",
+            "ms-vscode.vscode-json"
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": []
+    }
+}

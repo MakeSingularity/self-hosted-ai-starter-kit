@@ -88,6 +88,8 @@ services:
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - N8N_API_BASE_URL=http://localhost:5678/api/v1/
+      - N8N_DISABLE_UI=false
     ports:
       - 5678:5678
     volumes:
@@ -107,6 +109,25 @@ services:
       - 6333:6333
     volumes:
       - ./data/qdrant:/qdrant/storage
+
+  whisper-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.whisper
+    hostname: whisper-api
+    container_name: whisper-api
+    networks: ['demo']
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - ./temp:/app/temp:rw
+    depends_on:
+      - ollama-gpu
+    profiles: ["gpu-nvidia"]
 
   ollama-cpu:
     profiles: ["cpu"]
@@ -148,4 +169,4 @@ services:
     <<: *init-ollama
     image: ollama/ollama:rocm
     depends_on:
-     - ollama-gpu-amd
+      - ollama-gpu-amd

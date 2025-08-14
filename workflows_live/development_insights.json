@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-08-10T08:28:54.560627",
+  "workflow_patterns": {
+    "total_workflows": 1,
+    "average_nodes_per_workflow": 5.0,
+    "average_complexity": 13.0,
+    "active_percentage": 100.0
+  },
+  "development_suggestions": [
+    "Review failed executions and add error handling"
+  ],
+  "maintenance_tasks": [
+    "Investigate recent execution failures"
+  ],
+  "performance_metrics": {
+    "health_score": 75,
+    "success_rate": 0.0,
+    "workflow_efficiency": 87.0,
+    "maintenance_score": 37.5
+  }
+}

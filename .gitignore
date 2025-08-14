@@ -38,8 +38,7 @@ wandb/
 test_audio/
 audio_output/
 
-# IDE and editors
-.vscode/
+# IDE and editors - Keep VS Code settings for team consistency
 .idea/
 *.swp
 *.swo
@@ -55,7 +54,8 @@ desktop.ini
 logs/
 npm-debug.log*
 
-# Docker
+# Docker data (but keep docker-compose.yml)
+data/
 .docker/
 
 # Temporary files
@@ -81,5 +81,14 @@ error.log
 debug.log
 crash.log
 
-# VS Code workspace settings (optional)
-# .vscode/
+# n8n Integration - Keep workflows but ignore sensitive data
+workflows_live/workflow_status.json
+workflows_live/recent_executions.json
+# Keep workflows_live/README.md and development_insights.json for team visibility
+
+# Keep workspace backup workflows for version control
+# workflows_backup/ - This should be tracked
+
+# Sensitive API tokens (if stored separately)
+.n8n-token
+api-keys.json

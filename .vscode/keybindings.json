@@ -1,0 +1,44 @@
+[
+    {
+        "key": "ctrl+shift+n ctrl+shift+s",
+        "command": "workbench.action.tasks.runTask",
+        "args": "n8n: Sync Workflows to Workspace",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+n ctrl+shift+b",
+        "command": "workbench.action.tasks.runTask",
+        "args": "n8n: Backup All Workflows",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+n ctrl+shift+o",
+        "command": "workbench.action.tasks.runTask",
+        "args": "n8n: Open Web Interface",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+n ctrl+shift+u",
+        "command": "workbench.action.tasks.runTask",
+        "args": "n8n: Start All Services",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+n ctrl+shift+d",
+        "command": "workbench.action.tasks.runTask",
+        "args": "n8n: Stop All Services",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+n ctrl+shift+l",
+        "command": "workbench.action.tasks.runTask",
+        "args": "n8n: View Service Logs",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+n ctrl+shift+f",
+        "command": "workbench.action.tasks.runTask",
+        "args": "n8n: Full Development Setup",
+        "when": "!terminalFocus"
+    }
+]

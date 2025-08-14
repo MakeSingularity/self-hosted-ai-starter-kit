@@ -1,0 +1,258 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "n8n: Sync Workflows to Workspace",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/n8n_vscode_integration.py"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Sync n8n workflows and status to VS Code workspace",
+            "icon": {
+                "id": "sync",
+                "color": "terminal.ansiBlue"
+            }
+        },
+        {
+            "label": "n8n: Backup All Workflows",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/backup_n8n_workflows.py"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Backup all n8n workflows to version control",
+            "icon": {
+                "id": "archive",
+                "color": "terminal.ansiGreen"
+            }
+        },
+        {
+            "label": "n8n: Start All Services",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "--profile",
+                "gpu-nvidia",
+                "up",
+                "-d"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Start all Docker services with GPU support (n8n, Ollama GPU, Postgres, Qdrant)",
+            "icon": {
+                "id": "play",
+                "color": "terminal.ansiGreen"
+            }
+        },
+        {
+            "label": "n8n: Stop All Services",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "--profile",
+                "gpu-nvidia",
+                "down"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Stop all Docker services with GPU profile",
+            "icon": {
+                "id": "stop-circle",
+                "color": "terminal.ansiRed"
+            }
+        },
+        {
+            "label": "n8n: View Service Logs",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "--profile",
+                "gpu-nvidia",
+                "logs",
+                "-f",
+                "n8n"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "detail": "View live n8n service logs",
+            "icon": {
+                "id": "output",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "n8n: Open Web Interface",
+            "type": "shell",
+            "command": "start",
+            "args": [
+                "http://localhost:5678"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Open n8n web interface in browser",
+            "icon": {
+                "id": "globe",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "n8n: Full Development Setup",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "n8n: Start All Services",
+                "n8n: Setup Ngrok & Webhooks",
+                "n8n: Sync Workflows to Workspace"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Complete n8n development setup: start services, configure ngrok, and sync workflows",
+            "icon": {
+                "id": "rocket",
+                "color": "terminal.ansiMagenta"
+            }
+        },
+        {
+            "label": "n8n: Setup Ngrok & Webhooks",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/ngrok_webhook_manager.py",
+                "setup"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Automatically setup ngrok tunnel and configure webhooks",
+            "icon": {
+                "id": "globe",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "n8n: Check Ngrok Status",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/ngrok_webhook_manager.py",
+                "status"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Check ngrok tunnel and webhook status",
+            "icon": {
+                "id": "pulse",
+                "color": "terminal.ansiBlue"
+            }
+        },
+        {
+            "label": "n8n: Cleanup Ngrok",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/ngrok_webhook_manager.py",
+                "cleanup"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Clean up conflicting ngrok processes",
+            "icon": {
+                "id": "trash",
+                "color": "terminal.ansiRed"
+            }
+        }
+    ]
+}
