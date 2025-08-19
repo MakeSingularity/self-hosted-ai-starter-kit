@@ -1,0 +1,19 @@
+# Project-specific GitHub Copilot context configuration
+
+This file ensures only relevant project files are included as context
+
+## Include key project files
+
+!PROJECT_INSTRUCTIONS.yaml
+!.copilot/instructions.md
+!docs/N8N_NODE_SETUP_GUIDE.md
+
+## Exclude data and runtime files
+
+data/
+.venv/
+node_modules/
+*.log
+*.journal
+*.sqlite
+__pycache__/

@@ -29,7 +29,9 @@
         "*.n8n.json": "json",
         "**/workflows_backup/**/*.json": "json",
         "**/workflows_live/**/*.json": "json",
-        "**/data/n8n/**/*.json": "json"
+        "**/data/n8n/**/*.json": "json",
+        "PROJECT_INSTRUCTIONS.yaml": "yaml",
+        ".copilotinclude": "gitignore"
     },
     "json.schemas": [
         {

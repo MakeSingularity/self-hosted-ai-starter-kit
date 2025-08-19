@@ -1,3 +1,20 @@
 # Basic Python dependencies for any local scripts
 python-dotenv>=1.0.0
 requests>=2.31.0
+
+# Whisper Speech Recognition API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# AI/ML Dependencies  
+openai-whisper>=20231117
+torch>=2.0.0
+torchaudio>=2.0.0
+
+# Optional: If using local Whisper models
+# transformers>=4.35.0
+# datasets>=2.14.0
+
+# Development/Debugging
+psutil>=5.9.0

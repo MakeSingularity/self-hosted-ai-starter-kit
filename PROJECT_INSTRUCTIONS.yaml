@@ -1,0 +1,1394 @@
+# Self-Hosted AI Starter Kit - Project Instructions
+# AI Design Bible for maintaining project coherence and onboarding new AIs
+# Format: YAML for structured AI consumption with human readability
+
+metadata:
+  version: "1.0.0"
+  created: "2025-08-18"
+  last_updated: "2025-08-18"
+  maintained_by: 
+    - "Human Lead"
+    - "GitHub Copilot"
+  file_format: "YAML"
+  purpose: "Comprehensive project design bible for AI agents and human developers"
+  usage_notes: |
+    This file serves as the single source of truth for project architecture,
+    component relationships, and implementation standards. All AIs working on
+    this project should reference this file to maintain consistency.
+
+# =============================================================================
+# PROJECT GOAL & MISSION
+# =============================================================================
+project_goal:
+  mission: "Create a comprehensive self-hosted AI ecosystem for an intelligent workshop assistant with multi-modal sensory capabilities"
+  
+  vision: |
+    Develop a neural network-inspired modular AI system that combines vision, audio, and contextual 
+    understanding to assist users in workshop environments through real-time guidance, safety monitoring, 
+    and intelligent task coordination.
+  
+  current_phase:
+    name: "Foundation Layer - Voice & Workflow Integration"
+    status: "active_development"
+    focus_areas:
+      - "Telegram voice message transcription via Whisper API"
+      - "n8n workflow automation and optimization" 
+      - "Oliver AI assistant integration"
+      - "Service management and monitoring"
+      - "Modular architecture establishment"
+  
+  success_metrics:
+    - "Voice messages transcribed with >90% accuracy"
+    - "End-to-end voice-to-response latency <10 seconds"
+    - "Text and voice workflows operating without merge node issues"
+    - "Automated service health monitoring and recovery"
+    - "Modular architecture supporting cross-modal communication"
+  
+  future_phases:
+    - name: "Sensory Expansion Phase"
+      description: "Vision processing, object detection, gesture recognition"
+      modules: ["vision_processing", "audio_enhancement", "environmental_monitoring"]
+    
+    - name: "Cognitive Integration Phase" 
+      description: "Context fusion, task understanding, safety assessment"
+      modules: ["context_awareness", "knowledge_integration", "decision_making"]
+    
+    - name: "Workshop Intelligence Phase"
+      description: "Complete workshop assistant with AR/VR integration"
+      modules: ["workspace_analysis", "tool_guidance", "safety_systems"]
+
+# =============================================================================
+# HARDWARE SETUP
+# =============================================================================
+hardware:
+  primary_server:
+    name: "OLIVER"
+    role: "Main AI processing and hosting server"
+    
+    specifications:
+      system_type: "x64-based PC"
+      operating_system: "Microsoft Windows 11 Pro"
+      motherboard: "ASUSTek ROG STRIX Z790-E GAMING WIFI"
+      
+      processor:
+        model: "13th Gen Intel(R) Core(TM) i9-13900K"
+        base_frequency: "3000 MHz"
+        cores: 24
+        logical_processors: 32
+        architecture: "x64"
+      
+      memory:
+        installed_ram: "128 GB"
+        type: "Physical Memory (RAM)"
+        notes: "Excellent for large AI models and concurrent processing"
+      
+      graphics:
+        model: "NVIDIA GeForce RTX 4080 SUPER"
+        role: "AI acceleration, computer vision processing"
+        capabilities:
+          - "CUDA acceleration for AI workloads"
+          - "Real-time computer vision processing"
+          - "Parallel processing for multiple AI modules"
+          - "Hardware-accelerated video encoding/decoding"
+      
+      performance_profile:
+        ai_workload_capacity: "High - Can handle multiple large language models"
+        computer_vision: "Excellent - RTX 4080 SUPER ideal for real-time processing"
+        concurrent_modules: "High - 24 cores support extensive modularity"
+        workshop_monitoring: "Capable of real-time multi-camera processing"
+
+  vision_hardware:
+    camera_deployment:
+      total_cameras: 4
+      camera_type: "Vimtag 847 PTZ WiFi"
+      placement_strategy: "Upper corner mounting with 3-foot padding for PTZ overlap coverage"
+      network_subnet: "192.168.50.x"
+      
+      zone_coverage:
+        zone_1:
+          name: "Oliver-1"
+          ip_address: "192.168.50.51"
+          location: "Milling and Drilling Station"
+          coverage_area: "Precision machinery, drilling operations, CNC work"
+          ai_focus:
+            - "Tool safety monitoring for rotating machinery"
+            - "Precision measurement guidance"
+            - "Metal shaving and debris detection"
+            - "PPE compliance for machinery operation"
+        
+        zone_2:
+          name: "Oliver-2" 
+          ip_address: "192.168.50.214"
+          location: "Electronics and Programming Station"
+          coverage_area: "Circuit work, soldering, programming, delicate electronics"
+          ai_focus:
+            - "Small component identification and placement"
+            - "Soldering technique guidance and safety"
+            - "Anti-static procedure monitoring"
+            - "Circuit board analysis and debugging assistance"
+        
+        zone_3:
+          name: "Oliver-3"
+          ip_address: "192.168.50.222" 
+          location: "Motorcycle Diagnostic Station"
+          coverage_area: "Vehicle diagnostics, engine work, automotive tools"
+          ai_focus:
+            - "Engine component identification"
+            - "Diagnostic procedure guidance"
+            - "Automotive tool recognition and usage"
+            - "Fluid handling safety monitoring"
+        
+        zone_4:
+          name: "Oliver-4"
+          ip_address: "192.168.50.248"
+          location: "Tool & Supply Station"
+          coverage_area: "Tool storage, inventory management, supply organization"
+          ai_focus:
+            - "Tool inventory tracking and organization"
+            - "Supply level monitoring"
+            - "Tool condition assessment"
+            - "Optimal tool selection assistance"
+      
+      ptz_capabilities:
+        pan_tilt_zoom: "Full PTZ control for detailed task monitoring"
+        overlap_coverage: "3-foot padding ensures no blind spots between zones"
+        dynamic_focus: "Can zoom in on specific work areas or tools as needed"
+        preset_positions: "Programmable positions for common workshop configurations"
+      
+      technical_specifications:
+        connectivity: "WiFi (802.11 standards)"
+        streaming_protocol: "RTSP/HTTP for real-time feeds"
+        resolution: "HD quality for detailed AI analysis"
+        night_vision: "Infrared capability for low-light workshop conditions"
+        weather_resistance: "Indoor workshop environment protection"
+      
+      planned_capabilities:
+        multi_zone_coordination: "AI can track user movement between workshop zones"
+        zone_specific_guidance: "Specialized assistance based on current zone context"
+        cross_zone_awareness: "Understanding of workshop-wide project flow"
+        automated_ptz_control: "Cameras automatically focus on active work areas"
+        zone_handoff: "Seamless assistance as user moves between stations"
+      
+      integration_points:
+        streaming_protocol: "RTSP/HTTP streams from all 4 cameras"
+        processing_location: "OLIVER server RTX 4080 SUPER handles all 4 streams"
+        n8n_integration: "Camera trigger nodes and zone-specific workflows"
+        storage: "Zone-specific recording and project documentation"
+        load_balancing: "GPU processing distributed across camera feeds"
+      
+      network_requirements:
+        bandwidth: "4x HD streams require robust WiFi infrastructure"
+        latency: "Low latency for real-time zone-specific AI guidance"
+        reliability: "Stable WiFi connections for continuous multi-zone monitoring"
+        ip_management: "Static IP addresses for consistent zone identification"
+
+  future_expansion_hardware:
+    additional_sensors:
+      environmental:
+        - "Temperature and humidity sensors"
+        - "Air quality monitors"
+        - "Vibration sensors for machinery monitoring"
+        - "Sound level meters for noise analysis"
+      
+      workshop_specific:
+        - "Smart tool integration (Bluetooth/WiFi enabled tools)"
+        - "Precision measurement devices"
+        - "Material identification sensors"
+        - "Safety equipment sensors (PPE detection)"
+    
+    ar_vr_equipment:
+      - "Mixed reality headsets (HoloLens, Magic Leap, etc.)"
+      - "Spatial tracking systems"
+      - "Haptic feedback devices"
+      - "Gesture recognition hardware"
+    
+    networking_upgrades:
+      - "High-speed networking for camera streams"
+      - "Edge computing devices for distributed processing"
+      - "Wireless infrastructure for mobile devices"
+      - "Local 5G or WiFi 6E for low-latency communication"
+  
+  networking:
+    server_networking:
+      host_access: "host.docker.internal (for Docker container communication)"
+      container_communication: "Internal Docker networks"
+      external_access: "localhost ports for development and testing"
+    
+    camera_networking:
+      network_architecture: "Dedicated IoT network for camera isolation"
+      security_model: "Internet access blocked - local processing only"
+      camera_streams: "4x Vimtag 847 PTZ cameras on isolated 192.168.50.x subnet"
+      processing_location: "Centralized processing on OLIVER server RTX 4080 SUPER"
+      bandwidth_requirements: "4x HD RTSP streams on dedicated local network"
+      zone_identification: "Static IP addresses for consistent zone recognition"
+      
+      security_benefits:
+        - "No external attack surface for cameras"
+        - "Complete data privacy with local-only processing"
+        - "Network isolation prevents IoT device compromise"
+        - "Controlled access through OLIVER server gateway"
+      
+      camera_endpoints:
+        oliver_1: "rtsp://192.168.50.51/ (Milling and Drilling Station)"
+        oliver_2: "rtsp://192.168.50.214/ (Electronics and Programming Station)"
+        oliver_3: "rtsp://192.168.50.222/ (Motorcycle Diagnostic Station)"
+        oliver_4: "rtsp://192.168.50.248/ (Tool & Supply Station)"
+      
+      network_requirements:
+        local_bandwidth: "Sufficient for 4x HD streams on isolated network"
+        oliver_connectivity: "OLIVER server bridges IoT network to main network"
+        reliability: "Dedicated network ensures stable camera connections"
+        latency: "Local-only processing minimizes response times"
+    
+    port_allocation:
+      whisper_api: 8000
+      ollama: 11434
+      n8n: 5678
+      postgres: 5432
+      qdrant: 6333
+      camera_streams: "4x RTSP ports for Vimtag cameras on isolated IoT network (192.168.50.51, .214, .222, .248)"
+  
+  storage:
+    project_root: "C:\\AI Projects\\self-hosted-ai-starter-kit"
+    data_persistence: "./data/"
+    virtual_environment: "./.venv/"
+    
+    local_storage_strategy:
+      principle: "Complete local control and data sovereignty"
+      camera_recordings: "Local storage for all workshop session recordings"
+      ai_model_storage: "Local hosting of all AI models and training data"
+      project_documentation: "Local automatic logging and progress tracking"
+      backup_strategy: "Local redundancy without cloud dependencies"
+    
+    capacity_planning:
+      ai_models: "Large models benefit from 128GB RAM, local SSD storage"
+      camera_recordings: "Zone-specific local recording with retention policies"
+      training_data: "Local storage for computer vision model training datasets"
+      session_logs: "Comprehensive workshop session documentation"
+      performance_data: "AI model performance metrics and optimization data"
+    
+    storage_organization:
+      by_zone: "Separate storage paths for each workshop zone"
+      by_project: "Project-specific folders for long-term builds"
+      by_session: "Daily/weekly session recordings and logs"
+      by_model: "AI model versions and training iterations"
+    
+    privacy_benefits:
+      - "No external data transmission or cloud storage"
+      - "Complete control over sensitive workshop data"
+      - "GDPR/privacy compliance through local-only processing"
+      - "Industrial/commercial project confidentiality protection"
+
+# =============================================================================
+# PERFORMANCE OPTIMIZATION NOTES
+# =============================================================================
+performance_considerations:
+  ai_acceleration:
+    cpu_utilization: "24 cores excellent for parallel module processing"
+    gpu_acceleration: "RTX 4080 SUPER optimal for computer vision and AI inference"
+    memory_management: "128GB allows multiple large models simultaneously"
+    
+  real_time_processing:
+    camera_streams: "RTX 4080 SUPER handles 4x HD streams from isolated IoT network"
+    response_latency: "Local-only processing minimizes workshop guidance delays"
+    concurrent_modules: "Hardware supports full modular architecture simultaneously"
+    security_processing: "All AI inference local - no external dependencies"
+    
+    scalability_headroom:
+      current_utilization: "Foundation phase uses fraction of available resources"
+      expansion_capacity: "Significant room for additional AI modules and sensors"
+      future_proofing: "Hardware exceeds requirements for planned workshop assistant features"
+
+# =============================================================================
+# WORKSHOP ZONE INTELLIGENCE
+# =============================================================================
+zone_based_ai_processing:
+  multi_zone_coordination:
+    zone_awareness: "AI tracks user location and provides zone-specific guidance"
+    cross_zone_projects: "Understanding when projects span multiple workshop areas"
+    resource_optimization: "Suggesting optimal zone for specific tasks"
+    workflow_efficiency: "Minimizing movement between zones for task completion"
+  
+  zone_specific_ai_models:
+    milling_drilling_zone:
+      specialized_models: "Precision machinery operation and safety"
+      object_detection: "Mill bits, drill bits, workpiece positioning"
+      safety_monitoring: "Rotating machinery hazards, chip guards, PPE"
+      measurement_guidance: "Precision measurement and tolerance checking"
+    
+    electronics_programming_zone:
+      specialized_models: "Circuit analysis and component identification"
+      object_detection: "ICs, resistors, capacitors, PCB layouts"
+      safety_monitoring: "ESD protection, soldering safety, fume extraction"
+      technique_guidance: "Proper soldering, component placement, debugging"
+    
+    motorcycle_diagnostic_zone:
+      specialized_models: "Automotive component recognition and procedures"
+      object_detection: "Engine parts, diagnostic tools, fluid containers"
+      safety_monitoring: "Fluid handling, hot surfaces, moving parts"
+      procedure_guidance: "Diagnostic sequences, repair procedures, torque specs"
+    
+    tool_supply_zone:
+      specialized_models: "Inventory management and tool condition assessment"
+      object_detection: "Tool identification, wear assessment, organization"
+      efficiency_monitoring: "Tool accessibility, inventory levels, usage patterns"
+      maintenance_guidance: "Tool care, calibration, replacement recommendations"
+  
+  ptz_automation:
+    intelligent_tracking: "Cameras automatically follow user activity"
+    task_focused_zoom: "Zoom in on specific work areas when tasks begin"
+    zone_handoff: "Smooth camera transitions as user moves between zones"
+    preset_learning: "AI learns optimal camera positions for common tasks"
+    
+  zone_transition_intelligence:
+    movement_prediction: "Anticipate user movement to next zone"
+    context_preservation: "Maintain project context across zone transitions"
+    resource_preparation: "Pre-stage guidance for next zone activities"
+    efficiency_optimization: "Suggest optimal zone sequence for multi-zone tasks"# =============================================================================
+# SOFTWARE SETUP
+# =============================================================================
+software:
+  core_stack:
+    containerization: "Docker & Docker Compose"
+    workflow_automation: "n8n"
+    ai_inference: "Ollama"
+    speech_recognition: "Whisper API (FastAPI-based)"
+    database: "PostgreSQL"
+    vector_database: "Qdrant"
+    messaging_platform: "Telegram Bot API"
+  
+  development_environment:
+    python:
+      version: "3.x"
+      package_manager: "pip"
+      virtual_env: ".venv"
+      requirements_file: "requirements.txt"
+    
+    key_dependencies:
+      - "fastapi>=0.104.0"
+      - "uvicorn[standard]>=0.24.0"
+      - "python-multipart>=0.0.6"
+      - "psutil>=5.9.0"
+      - "requests"
+  
+  version_tracking:
+    # TODO: Fill in specific versions during next session
+    docker_compose_version: "TBD"
+    n8n_version: "TBD"
+    ollama_version: "TBD"
+
+# =============================================================================
+# MODULAR ARCHITECTURE - Neural Network Inspired Design
+# =============================================================================
+modular_architecture:
+  design_philosophy: |
+    Neural network-inspired modular system where each module acts as a processing layer
+    with clear inputs, outputs, and bidirectional communication channels. Modules operate
+    independently while sharing contextual state for intelligent coordination.
+
+  communication_pattern:
+    message_bus: "Central event system for inter-module coordination"
+    state_sharing: "Distributed context accessible by all modules"
+    priority_routing: "Critical safety messages get immediate precedence"
+    event_driven: "Modules activate based on input events and context changes"
+
+  # =============================================================================
+  # SENSORY INPUT MODULES (Data Acquisition Layer)
+  # =============================================================================
+  sensory_modules:
+    audio_processing:
+      current_implementation:
+        voice_recognition: "Whisper API via n8n workflows"
+        telegram_integration: "Voice message processing"
+        text_to_speech: "Planned - Oliver voice responses"
+      
+      future_expansion:
+        ambient_sound_detection: "Workshop environment monitoring"
+        audio_classification: "Tool sounds, machinery status"
+        spatial_audio: "3D sound source localization"
+        noise_filtering: "Adaptive background noise cancellation"
+      
+      module_outputs:
+        - "transcribed_text"
+        - "audio_events"
+        - "environmental_context"
+        - "user_voice_commands"
+
+    vision_processing:
+      current_implementation:
+        status: "planned"
+        foundation: "Computer vision framework selection pending"
+      
+      planned_capabilities:
+        object_detection: "Workshop tools, materials, parts identification"
+        scene_understanding: "Workspace layout, project state analysis"
+        gesture_recognition: "Hand signals, pointing, tool manipulation"
+        safety_monitoring: "PPE detection, hazard identification"
+        progress_tracking: "Assembly stages, completion verification"
+      
+      module_outputs:
+        - "detected_objects"
+        - "workspace_state"
+        - "user_gestures"
+        - "safety_alerts"
+        - "progress_indicators"
+
+    environmental_sensing:
+      future_capabilities:
+        temperature_monitoring: "Workshop climate, tool heating"
+        vibration_detection: "Machinery status, precision requirements"
+        lighting_analysis: "Optimal lighting recommendations"
+        air_quality: "Dust, fumes, ventilation needs"
+      
+      module_outputs:
+        - "environmental_conditions"
+        - "safety_parameters"
+        - "optimization_suggestions"
+
+  # =============================================================================
+  # COGNITIVE PROCESSING MODULES (Understanding & Decision Making Layer)
+  # =============================================================================
+  cognitive_modules:
+    context_awareness:
+      multimodal_fusion:
+        audio_visual_correlation: "Combine voice commands with visual confirmation"
+        temporal_context: "Understanding action sequences and timing"
+        spatial_awareness: "User position, tool placement, workspace geometry"
+        task_progression: "Current project stage, next logical steps"
+      
+      workshop_intelligence:
+        project_analysis: "Understanding current build/repair objectives"
+        resource_assessment: "Available tools, materials, workspace capacity"
+        skill_evaluation: "User expertise level, learning curve adaptation"
+        efficiency_optimization: "Workflow improvements, time management"
+      
+      safety_assessment:
+        risk_evaluation: "Real-time hazard identification and mitigation"
+        compliance_monitoring: "Safety protocol adherence"
+        emergency_detection: "Immediate danger recognition"
+        preventive_guidance: "Proactive safety recommendations"
+
+    knowledge_integration:
+      technical_knowledge:
+        procedure_database: "Step-by-step instructions for common tasks"
+        tool_specifications: "Proper usage, maintenance, capabilities"
+        material_properties: "Characteristics, compatibility, limitations"
+        troubleshooting_guides: "Common problems and solutions"
+      
+      adaptive_learning:
+        user_preference_modeling: "Individual working style adaptation"
+        pattern_recognition: "Identifying user habits and optimizations"
+        experience_accumulation: "Learning from successful/failed attempts"
+        personalization_engine: "Customizing guidance to user needs"
+      
+      contextual_memory:
+        project_history: "Previous work sessions, decisions made"
+        tool_usage_patterns: "Frequency, effectiveness, user comfort"
+        error_tracking: "Common mistakes, prevention strategies"
+        success_metrics: "Quality indicators, completion times"
+
+    decision_making:
+      instruction_generation:
+        step_sequencing: "Optimal order of operations"
+        clarity_optimization: "Clear, actionable guidance"
+        complexity_management: "Breaking down complex tasks"
+        timing_coordination: "When to provide next instruction"
+      
+      resource_optimization:
+        tool_recommendations: "Best tool for current task"
+        material_suggestions: "Optimal materials and quantities"
+        workspace_organization: "Efficient layout recommendations"
+        workflow_streamlining: "Eliminating unnecessary steps"
+      
+      error_correction:
+        mistake_identification: "Real-time error detection"
+        correction_strategies: "How to fix current problems"
+        prevention_guidance: "Avoiding similar future errors"
+        recovery_assistance: "Getting back on track efficiently"
+
+  # =============================================================================
+  # ACTION/RESPONSE MODULES (Output Generation Layer)
+  # =============================================================================
+  action_modules:
+    communication:
+      audio_feedback:
+        current_implementation: "Oliver AI text responses via Telegram"
+        planned_expansion:
+          voice_synthesis: "Natural speech generation"
+          audio_cues: "Success/warning/error sounds"
+          spatial_audio: "Directional audio guidance"
+          adaptive_volume: "Environment-appropriate audio levels"
+      
+      visual_feedback:
+        future_capabilities:
+          ar_overlays: "Augmented reality guidance and highlighting"
+          progress_visualization: "Real-time completion status"
+          measurement_display: "Dimensions, angles, tolerances"
+          safety_indicators: "Danger zones, proper techniques"
+          instruction_graphics: "Visual step-by-step guidance"
+      
+      haptic_feedback:
+        future_considerations:
+          tool_guidance: "Vibration patterns for precision work"
+          safety_alerts: "Physical warnings for immediate attention"
+          confirmation_signals: "Task completion acknowledgment"
+
+    workshop_integration:
+      tool_coordination:
+        smart_tool_integration: "Connected tool status and control"
+        automated_setup: "Tool preparation and calibration"
+        usage_optimization: "Performance monitoring and adjustment"
+        maintenance_scheduling: "Predictive maintenance alerts"
+      
+      workspace_management:
+        organization_assistance: "Optimal tool and material placement"
+        lighting_control: "Adaptive workspace illumination"
+        ventilation_management: "Air quality optimization"
+        noise_control: "Sound dampening recommendations"
+      
+      quality_assurance:
+        measurement_verification: "Precision checking and validation"
+        completion_assessment: "Quality evaluation and scoring"
+        documentation_generation: "Automatic project logging"
+        improvement_suggestions: "Performance enhancement recommendations"
+
+  # =============================================================================
+  # MODULE COMMUNICATION PROTOCOLS
+  # =============================================================================
+  inter_module_communication:
+    message_types:
+      sensory_input: "Raw data from sensors"
+      processed_data: "Analyzed and filtered information"
+      context_updates: "State changes and situational awareness"
+      action_requests: "Commands for output modules"
+      safety_alerts: "Immediate attention required"
+      status_reports: "Module health and performance"
+    
+    priority_levels:
+      critical: "Safety emergencies, immediate action required"
+      high: "Active task guidance, user requests"
+      medium: "Context updates, optimization suggestions"
+      low: "Background monitoring, data collection"
+    
+    state_management:
+      global_context: "Shared state accessible by all modules"
+      module_state: "Internal module-specific information"
+      user_profile: "Persistent user preferences and history"
+      session_context: "Current work session information"
+      project_state: "Long-term project progress and goals"
+
+# =============================================================================
+# CURRENT IMPLEMENTATION - WORKFLOWS & APPLICATIONS
+# =============================================================================
+current_workflows:
+  voice_processing:
+    name: "Oliver Voice Integration"
+    description: "Telegram voice message → Whisper transcription → Oliver AI response"
+    
+    workflow_path:
+      - "Telegram Trigger"
+      - "Switch Node (Message Type Router)"
+      - "Set Nodes (Data Preparation)"
+      - "Telegram Get File (Audio Download)"
+      - "HTTP Request (Whisper API)"
+      - "Function Node (Process Message Content)"
+      - "AI Agent (Oliver Response)"
+      - "HTTP Request (Send Telegram Reply)"
+    
+    key_configurations:
+      switch_node:
+        data_type: "Object"
+        property_name: "message"
+        rules: ["voice", "audio", "text"]
+      
+      whisper_api:
+        endpoint: "http://host.docker.internal:8000/transcribe/file"
+        method: "POST"
+        content_type: "multipart/form-data"
+        fallback_endpoint: "http://host.docker.internal:8000/transcribe/n8n"
+      
+      merge_node_issue: |
+        CRITICAL: Do not use Merge nodes - they cause text messages to hang.
+        Use direct connections to Function nodes instead.
+    
+    troubleshooting:
+      binary_data_access: "Debug with Function node to find correct $binary property name"
+      null_transcription: "Verify Set node data capture and HTTP request body formatting"
+      text_message_hanging: "Remove Merge nodes, use direct Function node connections"
+  
+  text_processing:
+    name: "Direct Text Processing"
+    description: "Telegram text message → Oliver AI response"
+    workflow_path:
+      - "Telegram Trigger"
+      - "Switch Node (Message Type Router)"
+      - "Set Node (Prepare Text Data)"
+      - "Function Node (Process Message Content)"
+      - "AI Agent (Oliver Response)"
+      - "HTTP Request (Send Telegram Reply)"
+
+# =============================================================================
+# CURRENT APPLICATIONS & SERVICES (Foundation Layer)
+# =============================================================================
+foundation_applications:
+  # Current implementations serving as foundation for modular architecture
+  
+  n8n:
+    module_classification: "workflow_orchestration"
+    purpose: 
+      - "Workflow automation and inter-module communication"
+      - "Event-driven message routing between modules"
+      - "API orchestration and data transformation"
+    
+    current_functions:
+      message_routing: "Switch nodes for voice/audio/text classification"
+      data_transformation: "Set nodes for standardizing data formats"
+      api_integration: "HTTP Request nodes for Whisper and Ollama APIs"
+      conditional_logic: "IF nodes for health checking and error handling"
+    
+    modular_role:
+      communication_hub: "Central message bus for module coordination"
+      workflow_engine: "Process automation and event handling"
+      integration_layer: "Connect external services to modular system"
+    
+    configuration:
+      base_url: "http://localhost:5678"
+      docker_container: "n8n"
+      data_persistence: "./data/n8n/"
+    
+    security_constraints:
+      child_process_blocked: true
+      alternative_solutions: "HTTP Request-based health checking instead of system commands"
+    
+    known_issues:
+      merge_node_hanging: "Text messages hang when using Merge nodes with voice workflows"
+      binary_data_access: "Binary property names may vary ($binary.data vs $binary.file)"
+
+  ollama:
+    module_classification: "cognitive_processing"
+    purpose:
+      - "Local LLM hosting for cognitive modules"
+      - "Natural language understanding and generation"
+      - "Context-aware decision making"
+    
+    current_functions:
+      model_serving: "llama3.1:latest model hosting"
+      text_generation: "Generate API for text completion"
+      chat_interface: "Chat API for conversational AI"
+      context_processing: "Understanding user intent and workshop context"
+    
+    modular_role:
+      language_processing: "Core NLP capabilities for all modules"
+      decision_engine: "Reasoning and planning for workshop tasks"
+      knowledge_integration: "Combining information from multiple sources"
+    
+    configuration:
+      base_url: "http://ollama:11434"
+      model: "llama3.1:latest"
+      docker_container: "ollama"
+    
+    integration:
+      n8n_connection: "AI Agent nodes or manual HTTP requests"
+      system_prompt: "Oliver AI assistant personality configuration"
+      future_expansion: "Multi-modal model support for vision integration"
+
+  whisper_api:
+    module_classification: "sensory_input_audio"
+    purpose:
+      - "Speech-to-text transcription (audio sensory module)"
+      - "Audio processing foundation for workshop assistant"
+      - "Voice command interpretation"
+    
+    current_functions:
+      file_transcription: "/transcribe/file endpoint for audio file uploads"
+      n8n_transcription: "/transcribe/n8n endpoint for Telegram integration"
+      health_status: "/status endpoint for service monitoring"
+      voice_command_processing: "Convert speech to actionable text"
+    
+    modular_role:
+      audio_input_gateway: "Primary audio sensory input for the system"
+      voice_interface: "Enable voice-based workshop guidance"
+      ambient_monitoring: "Future: Environmental audio analysis"
+    
+    configuration:
+      base_url: "http://localhost:8000"
+      model: "ZimaBlueAI/whisper-large-v3:latest"
+      model_size: "849.7 MB"
+    
+    dependencies:
+      ollama_integration: true
+      virtual_environment: ".venv"
+      service_manager: "scripts/whisper_service_manager.py"
+    
+    expansion_capabilities:
+      multi_language: "Support for multiple languages in workshop"
+      noise_filtering: "Workshop environment noise cancellation"
+      speaker_identification: "Multiple user voice recognition"
+      audio_classification: "Tool sounds, machinery status detection"
+
+  telegram_bot:
+    module_classification: "communication_interface"
+    purpose:
+      - "User interface bridge for modular system"
+      - "Multi-modal communication channel"
+      - "Remote workshop assistance platform"
+    
+    current_functions:
+      message_reception: "Webhook or polling for incoming messages"
+      file_download: "Voice/audio file retrieval"
+      response_delivery: "Text message replies"
+      media_handling: "Future: Image, video, document processing"
+    
+    modular_role:
+      user_interface: "Primary communication channel with workshop assistant"
+      remote_access: "Enable workshop guidance from anywhere"
+      multimedia_gateway: "Handle various input types (text, voice, images)"
+    
+    integration:
+      n8n_trigger: "Telegram Trigger node"
+      api_endpoint: "Telegram Bot API"
+      future_integrations: "AR/VR interfaces, workshop cameras"
+
+# =============================================================================
+# PLANNED MODULAR EXPANSIONS
+# =============================================================================
+planned_modules:
+  vision_processing:
+    timeline: "Phase 2 - Sensory Expansion"
+    technologies:
+      computer_vision: "OpenCV, YOLO, or similar framework"
+      object_detection: "Pre-trained models + workshop-specific training"
+      depth_sensing: "Stereo cameras or LiDAR integration"
+    
+    integration_points:
+      n8n_workflows: "Image processing nodes and event triggers"
+      ollama_analysis: "Vision-language model integration"
+      telegram_interface: "Image upload and visual feedback"
+  
+  environmental_sensing:
+    timeline: "Phase 2-3 - Context Enhancement"
+    technologies:
+      iot_sensors: "Temperature, humidity, air quality monitoring"
+      vibration_analysis: "Machinery status and precision monitoring"
+      lighting_control: "Adaptive workspace illumination"
+    
+    integration_points:
+      mqtt_broker: "IoT sensor data collection"
+      n8n_automation: "Environmental response workflows"
+      safety_systems: "Automatic alerts and adjustments"
+  
+  augmented_reality:
+    timeline: "Phase 3 - Advanced Interface"
+    technologies:
+      ar_framework: "ARCore, ARKit, or WebXR"
+      spatial_mapping: "3D workspace understanding"
+      gesture_recognition: "Hand tracking and gesture commands"
+    
+    integration_points:
+      visual_overlays: "Real-time guidance and measurements"
+      spatial_audio: "Directional workshop instructions"
+      haptic_feedback: "Precision guidance and safety alerts"
+
+# =============================================================================
+# SCRIPTS & AUTOMATION
+# =============================================================================
+scripts:
+  service_management:
+    whisper_service_manager:
+      location: "scripts/whisper_service_manager.py"
+      purpose: "Complete service lifecycle management for Whisper API"
+      functions:
+        - "start: Launch Whisper API with virtual environment"
+        - "stop: Gracefully terminate Whisper API processes"
+        - "status: Check API health and process status"
+        - "restart: Stop and start service"
+      
+      key_features:
+        - "Virtual environment integration"
+        - "Cross-platform compatibility (Windows/Linux)"
+        - "Process detection and management"
+        - "API health verification"
+    
+    n8n_whisper_health_check:
+      location: "scripts/n8n_whisper_health_check.py"
+      purpose: "n8n-compatible health checking and auto-start"
+      status: "created_but_blocked"
+      limitation: "n8n security sandbox blocks child_process module"
+      alternative: "HTTP Request-based health checking within n8n"
+  
+  environment_setup:
+    setup_dependencies:
+      location: "setup_dependencies.py"
+      purpose: "Automated virtual environment creation and dependency installation"
+      functions:
+        - "Virtual environment creation"
+        - "Pip upgrade and package installation"
+        - "Import testing and verification"
+  
+  monitoring:
+    system_metrics:
+      location: "shared/system_metrics.py"
+      purpose: "System performance monitoring"
+    
+    health_checks:
+      method: "HTTP Request nodes in n8n workflows"
+      endpoints:
+        - "GET http://host.docker.internal:8000/ (Whisper API)"
+        - "GET http://ollama:11434/ (Ollama)"
+      fallback_handling: "Graceful degradation with user notifications"
+
+# =============================================================================
+# MODULAR INTEGRATION PATTERNS
+# =============================================================================
+integration_patterns:
+  cross_modal_validation:
+    audio_visual_confirmation:
+      description: "Validate voice commands with visual context"
+      example: "User says 'drill' while picking up a drill - both modules confirm action"
+      implementation: "Event correlation between audio and vision modules"
+    
+    environmental_consistency:
+      description: "Ensure audio events match visual observations"
+      example: "Drilling sound correlates with drilling action and drill tool detection"
+      implementation: "Multi-modal event fusion and validation"
+    
+    safety_cross_check:
+      description: "Multiple modules verify safety conditions"
+      example: "Audio command, visual PPE check, environmental hazard assessment"
+      implementation: "Parallel safety validation across all sensory modules"
+
+  contextual_awareness_patterns:
+    temporal_context:
+      description: "Understanding action sequences and timing"
+      examples:
+        - "What tool was used in the last 30 seconds?"
+        - "Is this the logical next step in the process?"
+        - "How long has the user been working on this task?"
+      implementation: "Shared temporal state across all modules"
+    
+    spatial_context:
+      description: "Understanding workspace geometry and object relationships"
+      examples:
+        - "Where is the user positioned relative to tools?"
+        - "What's within reach vs. requiring movement?"
+        - "Are tools organized optimally for current task?"
+      implementation: "3D spatial mapping shared between vision and audio modules"
+    
+    task_context:
+      description: "Understanding current project objectives and progress"
+      examples:
+        - "What project stage are we in?"
+        - "What are the next logical steps?"
+        - "Have prerequisites been completed?"
+      implementation: "Project state management accessible by all modules"
+
+  adaptive_learning_patterns:
+    user_pattern_recognition:
+      description: "Learning individual user working styles and preferences"
+      examples:
+        - "User prefers detailed instructions vs. high-level guidance"
+        - "User typically uses specific tools for certain tasks"
+        - "User works better with visual vs. audio cues"
+      implementation: "User profile shared across all modules"
+    
+    environment_adaptation:
+      description: "Calibrating to specific workshop conditions"
+      examples:
+        - "Ambient noise levels requiring volume adjustment"
+        - "Lighting conditions affecting vision processing"
+        - "Tool placement and workspace organization"
+      implementation: "Environmental parameter sharing and automatic adjustment"
+    
+    task_optimization:
+      description: "Improving guidance effectiveness over time"
+      examples:
+        - "Timing of instruction delivery for maximum effectiveness"
+        - "Complexity level appropriate for user skill"
+        - "Most effective communication modality for different tasks"
+      implementation: "Performance metrics collection and optimization algorithms"
+
+  error_handling_patterns:
+    graceful_degradation:
+      description: "System continues operating when modules fail"
+      examples:
+        - "Vision module fails → rely on audio guidance only"
+        - "Audio module fails → use visual indicators and text"
+        - "Network issues → use local processing only"
+      implementation: "Module health monitoring and automatic fallback"
+    
+    error_recovery:
+      description: "Automatic recovery from module failures"
+      examples:
+        - "Restart failed modules automatically"
+        - "Recalibrate sensors after errors"
+        - "Resume operation when connectivity restored"
+      implementation: "Health monitoring, automatic restarts, state recovery"
+    
+    user_notification:
+      description: "Keep user informed of system status"
+      examples:
+        - "Voice transcription temporarily unavailable"
+        - "Vision processing reduced due to lighting"
+        - "Some features disabled - manual mode suggested"
+      implementation: "User-friendly status communication across all channels"
+
+# =============================================================================
+# WORKSHOP ASSISTANT SPECIFIC APPLICATIONS
+# =============================================================================
+workshop_specific_modules:
+  tool_intelligence:
+    current_status: "planned"
+    description: "Smart tool integration and guidance"
+    capabilities:
+      tool_identification: "Visual recognition of tools and their states"
+      usage_guidance: "Proper tool handling and safety procedures"
+      maintenance_alerts: "Predictive maintenance and care instructions"
+      selection_assistance: "Recommend optimal tool for current task"
+    
+    integration_requirements:
+      vision_module: "Object detection and classification"
+      audio_module: "Tool sound analysis and audio feedback"
+      knowledge_base: "Tool specifications and procedures"
+      safety_system: "Tool-specific safety protocols"
+
+  project_management:
+    current_status: "planned"
+    description: "Workshop project tracking and guidance"
+    capabilities:
+      progress_tracking: "Visual assessment of completion status"
+      quality_assessment: "Measurement validation and quality scoring"
+      documentation: "Automatic project logging and reporting"
+      planning_assistance: "Step sequencing and resource planning"
+    
+    integration_requirements:
+      vision_module: "Progress measurement and quality assessment"
+      audio_module: "Voice logging and instruction confirmation"
+      cognitive_module: "Planning logic and decision making"
+      memory_system: "Project history and pattern recognition"
+
+  safety_coordination:
+    current_status: "foundation_laid"
+    description: "Comprehensive workshop safety monitoring"
+    capabilities:
+      hazard_detection: "Real-time identification of safety risks"
+      ppe_monitoring: "Personal protective equipment verification"
+      emergency_response: "Immediate alerts and assistance"
+      preventive_guidance: "Proactive safety recommendations"
+    
+    integration_requirements:
+      vision_module: "Visual hazard and PPE detection"
+      audio_module: "Audio alerts and emergency communication"
+      environmental_sensors: "Air quality, noise, temperature monitoring"
+      immediate_response: "Priority message routing for emergencies"
+
+# =============================================================================
+# DETAILED APPLICATIONS TRACKING
+# =============================================================================
+applications_usage_tracking:
+  tracking_purpose: |
+    Monitor how and why we use each application, track configuration changes,
+    performance metrics, and decision rationales to maintain system coherence
+    and enable intelligent optimization.
+
+  n8n_workflow_automation:
+    usage_patterns:
+      primary_function: "Central workflow orchestration and module communication"
+      daily_operations: "Telegram message processing, API coordination, health monitoring"
+      configuration_changes: "Track node additions, workflow modifications, performance tuning"
+      decision_rationale: "Chosen for visual workflow design and extensive integration capabilities"
+    
+    performance_metrics:
+      workflow_execution_time: "Monitor latency from trigger to completion"
+      error_rates: "Track failed workflows and common failure points"
+      throughput: "Messages processed per hour/day"
+      resource_utilization: "CPU/memory usage during peak operations"
+    
+    configuration_parameters:
+      node_types_used: ["Switch", "Set", "HTTP Request", "Function", "AI Agent", "Telegram", "IF"]
+      workflow_complexity: "Number of nodes per workflow, branching patterns"
+      data_transformation_patterns: "How data flows between nodes"
+      error_handling_strategies: "Fallback mechanisms and retry logic"
+    
+    integration_points:
+      incoming_connections: ["Telegram Bot API", "Whisper API health checks", "Camera triggers"]
+      outgoing_connections: ["Whisper API", "Ollama", "Telegram responses", "Zone cameras"]
+      data_formats: ["JSON", "multipart/form-data", "binary data streams"]
+    
+    optimization_opportunities:
+      identified_bottlenecks: "Merge node issues, binary data access patterns"
+      performance_improvements: "Direct Function node connections, HTTP Request optimization"
+      scaling_considerations: "Adding zone-specific workflows, camera integration"
+
+  ollama_ai_inference:
+    usage_patterns:
+      primary_function: "Local LLM hosting for cognitive processing"
+      model_serving: "llama3.1:latest for Oliver AI assistant"
+      request_patterns: "Text generation, conversation, context processing"
+      decision_rationale: "Local hosting for privacy, performance, and cost control"
+    
+    performance_metrics:
+      inference_latency: "Response time for text generation requests"
+      token_throughput: "Tokens processed per second"
+      memory_usage: "RAM consumption for loaded models"
+      gpu_utilization: "CUDA usage on RTX 4080 SUPER"
+    
+    configuration_parameters:
+      loaded_models: ["llama3.1:latest", "future: vision-language models"]
+      context_length: "Maximum conversation context maintained"
+      temperature_settings: "Creativity vs consistency balance"
+      system_prompts: "Oliver personality and workshop-specific instructions"
+    
+    integration_points:
+      n8n_workflows: "AI Agent nodes and HTTP Request nodes"
+      future_integrations: "Zone-specific AI agents, vision-language processing"
+      api_endpoints: "/api/generate, /api/chat, /api/embeddings"
+    
+    optimization_opportunities:
+      model_switching: "Zone-specific model loading for specialized tasks"
+      context_optimization: "Maintaining workshop state across conversations"
+      multi_modal_expansion: "Adding vision capabilities for camera integration"
+
+  whisper_speech_recognition:
+    usage_patterns:
+      primary_function: "Speech-to-text for audio sensory module"
+      endpoint_usage: "/transcribe/file for n8n, /transcribe/n8n for Telegram"
+      audio_sources: "Telegram voice messages, future: workshop ambient audio"
+      decision_rationale: "High accuracy, local processing, workshop noise handling"
+    
+    performance_metrics:
+      transcription_accuracy: "Word error rate in workshop environment"
+      processing_latency: "Time from audio upload to text output"
+      concurrent_requests: "Multiple audio streams processing capability"
+      model_performance: "ZimaBlueAI/whisper-large-v3:latest efficiency metrics"
+    
+    configuration_parameters:
+      model_size: "849.7 MB - balance of accuracy and speed"
+      supported_formats: "Audio file types accepted and processed"
+      noise_filtering: "Workshop ambient noise cancellation settings"
+      language_support: "Primary language and dialect configurations"
+    
+    integration_points:
+      n8n_workflows: "HTTP Request nodes for file upload and JSON processing"
+      telegram_integration: "Voice message file download and transcription"
+      future_camera_audio: "Audio streams from zone cameras"
+    
+    optimization_opportunities:
+      workshop_acoustic_training: "Fine-tuning for workshop-specific terminology"
+      multi_language_support: "Additional language models for diverse users"
+      real_time_streaming: "Live audio transcription from cameras"
+
+  postgresql_database:
+    usage_patterns:
+      primary_function: "Persistent data storage for workshop intelligence"
+      data_types: "User profiles, project history, zone activity, performance metrics"
+      query_patterns: "Session logging, pattern analysis, historical lookups"
+      decision_rationale: "Reliable ACID compliance, complex query capabilities"
+    
+    performance_metrics:
+      query_response_time: "Database performance under AI workload"
+      storage_growth: "Data accumulation rates by category"
+      connection_pooling: "Concurrent connections from multiple modules"
+      backup_performance: "Local backup and recovery operations"
+    
+    configuration_parameters:
+      schema_design: "Tables for users, sessions, zones, projects, metrics"
+      indexing_strategy: "Optimized for time-series and lookup queries"
+      retention_policies: "Data lifecycle management for different data types"
+      performance_tuning: "Memory allocation, cache sizes, query optimization"
+    
+    integration_points:
+      n8n_database_nodes: "Direct database operations from workflows"
+      ai_agent_queries: "Historical data for context-aware responses"
+      analytics_reporting: "Workshop efficiency and usage pattern analysis"
+    
+    optimization_opportunities:
+      time_series_optimization: "Specialized storage for sensor and activity data"
+      analytics_acceleration: "Materialized views for common AI queries"
+      cross_zone_analysis: "Queries spanning multiple workshop zones"
+
+  qdrant_vector_database:
+    usage_patterns:
+      primary_function: "Vector storage for AI embeddings and similarity search"
+      data_types: "Text embeddings, image features, workshop knowledge vectors"
+      search_patterns: "Semantic similarity, context retrieval, knowledge lookup"
+      decision_rationale: "High-performance vector search for AI applications"
+    
+    performance_metrics:
+      search_latency: "Vector similarity search response times"
+      indexing_performance: "New vector insertion and update speeds"
+      memory_efficiency: "RAM usage for vector indexes"
+      search_accuracy: "Relevance scores for retrieved results"
+    
+    configuration_parameters:
+      vector_dimensions: "Embedding sizes for different AI models"
+      distance_metrics: "Cosine similarity, Euclidean distance configurations"
+      indexing_algorithms: "HNSW parameters for optimal search performance"
+      collection_structure: "Separate collections for different data types"
+    
+    integration_points:
+      ollama_embeddings: "Vector generation from text and conversation context"
+      knowledge_base: "Workshop procedure and safety information storage"
+      future_vision: "Image feature vectors from camera processing"
+    
+    optimization_opportunities:
+      multi_modal_vectors: "Combined text-image embeddings for workshop context"
+      real_time_indexing: "Live vector updates from ongoing workshop activities"
+      federated_search: "Cross-zone knowledge sharing and retrieval"
+
+# =============================================================================
+# AI AGENT CROSS-REFERENCE SYSTEM
+# =============================================================================
+ai_agent_cross_references:
+  architecture_philosophy: |
+    Implement a neural network-style communication system where AI Agents can call 
+    other AI Agents as tools, creating a hierarchical and collaborative intelligence 
+    network spanning zones, tasks, and specializations.
+
+  agent_hierarchy:
+    master_coordination_agent:
+      role: "Top-level workshop intelligence coordinator"
+      responsibilities:
+        - "Overall project management and workflow optimization"
+        - "Cross-zone coordination and resource allocation" 
+        - "Safety oversight and emergency response coordination"
+        - "Learning and adaptation from workshop patterns"
+      
+      tools_available:
+        - "Zone AI Agents (Oliver-1, Oliver-2, Oliver-3, Oliver-4)"
+        - "Task-specific AI Agents (Audio, Vision, Safety, Planning)"
+        - "Knowledge base AI Agent"
+        - "Database query AI Agent"
+      
+      decision_making: "High-level strategic decisions, zone handoffs, emergency protocols"
+
+    zone_ai_agents:
+      oliver_1_milling_drilling:
+        specialization: "Precision machinery, drilling operations, CNC work"
+        local_tools:
+          - "Precision measurement AI"
+          - "Machinery safety monitor AI"
+          - "Tool selection optimizer AI"
+          - "Quality control AI"
+        cross_zone_calls:
+          - "Tool Supply Agent for tool requests"
+          - "Safety Agent for hazard assessment"
+          - "Master Agent for complex project coordination"
+      
+      oliver_2_electronics:
+        specialization: "Circuit work, soldering, programming, delicate electronics"
+        local_tools:
+          - "Component identification AI"
+          - "Soldering technique AI"
+          - "Circuit analysis AI"
+          - "ESD safety monitor AI"
+        cross_zone_calls:
+          - "Tool Supply Agent for component inventory"
+          - "Diagnostic Agent for troubleshooting"
+          - "Master Agent for project integration"
+      
+      oliver_3_motorcycle:
+        specialization: "Vehicle diagnostics, engine work, automotive procedures"
+        local_tools:
+          - "Engine component AI"
+          - "Diagnostic procedure AI"
+          - "Automotive tool AI"
+          - "Fluid safety monitor AI"
+        cross_zone_calls:
+          - "Tool Supply Agent for automotive tools"
+          - "Safety Agent for fluid handling"
+          - "Master Agent for complex repairs"
+      
+      oliver_4_tool_supply:
+        specialization: "Inventory management, tool organization, supply tracking"
+        local_tools:
+          - "Inventory tracking AI"
+          - "Tool condition assessment AI"
+          - "Organization optimizer AI"
+          - "Procurement advisor AI"
+        cross_zone_calls:
+          - "All Zone Agents for tool requests and returns"
+          - "Master Agent for inventory planning"
+          - "Safety Agent for tool safety compliance"
+
+    task_specialized_agents:
+      audio_processing_agent:
+        specialization: "Speech recognition, voice commands, audio analysis"
+        tools_available:
+          - "Whisper transcription service"
+          - "Voice command parser"
+          - "Audio quality analyzer"
+          - "Noise filtering optimizer"
+        serves_zones: "All zones - provides audio input processing"
+        cross_references: "Calls Vision Agent for multi-modal confirmation"
+      
+      vision_processing_agent:
+        specialization: "Computer vision, object detection, scene analysis"
+        tools_available:
+          - "Camera stream processors (Oliver-1,2,3,4)"
+          - "Object detection models"
+          - "Scene understanding AI"
+          - "Gesture recognition AI"
+        serves_zones: "All zones - provides visual context"
+        cross_references: "Calls Audio Agent for audio-visual synchronization"
+      
+      safety_coordination_agent:
+        specialization: "Workshop safety, hazard detection, emergency response"
+        tools_available:
+          - "Multi-zone safety monitor"
+          - "PPE detection AI"
+          - "Hazard assessment AI"
+          - "Emergency protocol AI"
+        serves_zones: "All zones - priority safety override"
+        cross_references: "Can override any agent for safety emergencies"
+      
+      knowledge_base_agent:
+        specialization: "Workshop procedures, technical knowledge, learning"
+        tools_available:
+          - "Procedure database AI"
+          - "Technical documentation AI"
+          - "Pattern learning AI"
+          - "Best practices optimizer AI"
+        serves_zones: "All zones - provides contextual knowledge"
+        cross_references: "Supports all agents with relevant information"
+
+  communication_protocols:
+    agent_to_agent_calls:
+      call_syntax: "Standardized API for AI agents to request services from other agents"
+      parameter_passing: "Context, user state, zone information, task requirements"
+      response_handling: "Structured responses with confidence scores and alternatives"
+      error_handling: "Fallback agents and graceful degradation strategies"
+    
+    context_sharing:
+      global_context: "Workshop state, user location, active projects, safety status"
+      zone_context: "Zone-specific activity, tool usage, environmental conditions"
+      user_context: "Preferences, skill level, project history, current focus"
+      temporal_context: "Recent actions, task progression, timing patterns"
+    
+    priority_management:
+      emergency_override: "Safety agents can interrupt any other agent"
+      zone_priority: "Local zone agents have priority for zone-specific decisions"
+      user_priority: "Direct user requests override automated suggestions"
+      efficiency_priority: "Cross-zone optimization when no conflicts exist"
+
+  n8n_implementation_strategy:
+    ai_agent_nodes: "Each AI Agent implemented as specialized n8n AI Agent nodes"
+    workflow_orchestration: "n8n workflows coordinate agent interactions"
+    tool_calling_patterns: "HTTP Request nodes enable agent-to-agent communication"
+    context_management: "Shared variables and database storage for agent context"
+    
+    scalability_design:
+      modular_workflows: "Each agent type has dedicated workflow templates"
+      dynamic_routing: "Switch nodes route requests to appropriate agent workflows"
+      load_balancing: "Multiple instances of popular agents for performance"
+      monitoring_integration: "Agent performance tracking and optimization"
+
+  implementation_benefits:
+    specialized_intelligence: "Each agent becomes expert in specific domain"
+    collaborative_problem_solving: "Agents work together on complex tasks"
+    graceful_scaling: "Easy to add new agents and capabilities"
+    fault_tolerance: "Agent failures don't break entire system"
+    learning_acceleration: "Specialized agents learn faster in focused domains"
+
+# =============================================================================
+# DEVELOPMENT STANDARDS & BEST PRACTICES
+# =============================================================================
+standards:
+  virtual_environment:
+    requirement: "All Python development must use .venv virtual environment"
+    setup_command: "python -m venv .venv"
+    activation: ".venv\\Scripts\\activate (Windows)"
+    package_installation: "pip install -r requirements.txt"
+  
+  dependency_management:
+    requirements_file: "requirements.txt"
+    update_practice: "Version pinning for stability"
+    testing: "Import verification after installation"
+  
+  n8n_workflow_design:
+    avoid_merge_nodes: "Use direct Function node connections instead"
+    debug_strategy: "Function nodes with console.log for troubleshooting"
+    error_handling: "IF nodes for conditional logic and graceful fallbacks"
+    binary_data: "Debug binary property names before file upload operations"
+  
+  service_integration:
+    health_checking: "HTTP-based status endpoints preferred over system commands"
+    api_communication: "host.docker.internal for n8n → host service communication"
+    error_recovery: "Graceful degradation with user-friendly error messages"
+
+# =============================================================================
+# CURRENT ISSUES & SOLUTIONS
+# =============================================================================
+current_issues:
+  n8n_container_update:
+    description: "User attempted n8n container update and encountered issues"
+    status: "pending_assessment"
+    next_steps:
+      - "Assess current container states"
+      - "Check docker-compose.yml configuration"
+      - "Verify data persistence"
+      - "Test workflow functionality"
+  
+  binary_data_access:
+    description: "{{ $binary.data }} returns undefined in HTTP Request nodes"
+    solution: "Add debug Function node to identify correct binary property name"
+    status: "solution_provided"
+  
+  merge_node_hanging:
+    description: "Text messages hang when using Merge nodes in voice workflows"
+    solution: "Remove Merge nodes, use direct Function node connections"
+    status: "solution_documented"
+
+# =============================================================================
+# PROJECT CONTEXT & HISTORY
+# =============================================================================
+project_context:
+  development_approach: "Iterative problem-solving with infrastructure best practices"
+  ai_collaboration: "Human-AI pair programming with GitHub Copilot"
+  documentation_strategy: "Living documentation that evolves with project"
+  
+  recent_achievements:
+    - "Virtual environment setup with proper dependency isolation"
+    - "Comprehensive service management tools creation"
+    - "Whisper API integration with n8n workflows"
+    - "Oliver AI assistant integration via Ollama"
+    - "n8n security constraint workarounds"
+  
+  lessons_learned:
+    - "n8n security sandbox blocks child_process module access"
+    - "Virtual environments essential for proper dependency isolation"
+    - "Merge nodes cause workflow hanging with conditional paths"
+    - "HTTP Request-based solutions preferred for service integration"
+
+# =============================================================================
+# COLLABORATION GUIDELINES
+# =============================================================================
+collaboration:
+  ai_agent_onboarding:
+    required_reading: "This entire PROJECT_INSTRUCTIONS.yaml file"
+    context_priority: 
+      1: "Current phase focus and active issues"
+      2: "Application configurations and known limitations"
+      3: "Workflow designs and troubleshooting patterns"
+      4: "Development standards and best practices"
+  
+  update_protocol:
+    frequency: "After significant changes or discoveries"
+    versioning: "Increment version number and update last_updated timestamp"
+    validation: "Test instructions with fresh AI agent to ensure completeness"
+  
+  decision_making:
+    technical_decisions: "Collaborative between human lead and AI agents"
+    architecture_changes: "Document rationale and alternatives considered"
+    tool_selection: "Balance between functionality, maintainability, and learning curve"
+
+# =============================================================================
+# EXPANSION AREAS (Future Development)
+# =============================================================================
+expansion_areas:
+  # These will be populated as we continue our collaborative discussion
+  detailed_hardware_specs: "TBD during next session"
+  specific_software_versions: "TBD during next session"
+  performance_benchmarks: "TBD during next session"
+  testing_frameworks: "TBD during next session"
+  deployment_strategies: "TBD during next session"
+  security_configurations: "TBD during next session"
