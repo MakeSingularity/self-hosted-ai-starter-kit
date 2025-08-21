@@ -1,0 +1,874 @@
+{
+  "createdAt": "2025-08-07T02:03:30.556Z",
+  "updatedAt": "2025-08-20T23:35:01.000Z",
+  "id": "rKO0PUthz0jXtKhD",
+  "name": "Oliver",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.processed_text }}",
+        "options": {
+          "systemMessage": "You are Oliver, a helpful AI assistant. When responding to voice messages, acknowledge that you heard their voice message. If the transcription seems unclear, politely ask for clarification.\\n\\nCurrent message source: {{ $json.message_source }}",
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        -320
+      ],
+      "id": "ad879d62-f9c5-4fdc-8ec0-6ec4a2a69b2f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.1:8b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -112
+      ],
+      "id": "1a675b9b-1dc8-45eb-b263-6b15e628b21f",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "0qHm0xDUjhVUNjkF",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $execution.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        80
+      ],
+      "id": "cf2b495f-f741-4f60-9f4c-5f874e4bb440",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "KQ9ZVAiIXsIsOUpA",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        -208
+      ],
+      "id": "2b7edf59-cfeb-4634-ac21-b82a4c488147",
+      "name": "Telegram Trigger",
+      "webhookId": "f35e769a-acca-42c4-89e0-e8f8acc43bea",
+      "credentials": {
+        "telegramApi": {
+          "id": "VaOPcW3yM4ybDnyz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.response }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1824,
+        -320
+      ],
+      "id": "2edd723e-f04d-451c-b71f-46b39a5e5dfe",
+      "name": "Send a text message",
+      "webhookId": "e8cb59ff-08cd-4076-8ef1-e22907f0813b",
+      "credentials": {
+        "telegramApi": {
+          "id": "VaOPcW3yM4ybDnyz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "876d908e-3e94-4a94-aa48-c75d6fa88a2f",
+                    "leftValue": "={{ $json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice Messages"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "17da202e-e039-4601-b85a-d647d06c7162",
+                    "leftValue": "={{ $json.message.audio }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio Messages"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bf634355-780e-4ab1-ba6e-2e2e81ea29bc",
+                    "leftValue": "={{ $json.message.chat }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text Messages"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        32,
+        -240
+      ],
+      "id": "95be4511-2b42-4c42-b391-b478b40ff324",
+      "name": "Message Type Router"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0f5b6227-7b2c-4c53-812a-9e433849f6cd",
+              "name": "message_type",
+              "value": "=voice",
+              "type": "string"
+            },
+            {
+              "id": "212dfea1-94f4-48e4-9452-596e4251b498",
+              "name": "needs_transcription",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "7aa09cfd-c924-4baf-8044-7b322bf7642f",
+              "name": "file_id",
+              "value": "={{ $json.message.voice.file_id }}",
+              "type": "string"
+            },
+            {
+              "id": "0ba55522-1b35-48fd-9f7e-5ddc5c853e1c",
+              "name": "duration",
+              "value": "={{ $json.message.voice.duration }}",
+              "type": "number"
+            },
+            {
+              "id": "03660e87-b18e-45e5-b379-2f61b9ff2a8c",
+              "name": "mime_type",
+              "value": "=  {{ $json.message.voice.mime_type || 'audio/ogg' }}",
+              "type": "string"
+            },
+            {
+              "id": "213c56cf-0d0e-44a9-8e5f-5d69d51e3a62",
+              "name": "user_id",
+              "value": "={{ $json.message.from.id }}",
+              "type": "number"
+            },
+            {
+              "id": "b63a596e-e053-46a9-b859-a7b081b02803",
+              "name": "username",
+              "value": "={{ $json.message.from.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "934def3c-3a5b-49a9-b16a-49898bbfae00",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "defff5c1-8c87-465d-866b-ae53790f366a",
+              "name": "telegram_message_id",
+              "value": "={{ $json.message.message_id }}",
+              "type": "number"
+            },
+            {
+              "id": "ca16f53c-aa56-417b-bea7-d3ad8347f622",
+              "name": "original_message",
+              "value": "={{ $('Telegram Trigger').item.json.message }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        -688
+      ],
+      "id": "8438ecd2-ddc7-4c05-9ec8-ab9e87146101",
+      "name": "Prepare Voice Data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/transcribe/file",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{ \"Content-Type\": \"application/json\" }",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Name",
+              "value": "={{ $json.original_message.voice.file_unique_id }}"
+            },
+            {
+              "name": "Value",
+              "value": "={{ $json.original_message.voice }}"
+            },
+            {
+              "name": "Type",
+              "value": "File"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        -688
+      ],
+      "id": "9f34b95d-9a29-43df-a34f-008a9ba48893",
+      "name": "Transcribe Voice Message"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        768,
+        -512
+      ],
+      "id": "5e517998-266a-4fa7-aa20-2c2827e86b0a",
+      "name": "Merge",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process message content with robust data access for Oliver workflow\n// Handles both voice transcription and text message data flows\n\nconst allItems = items; // Get all input data\nlet currentItem = items[0].json;\n\n// Debug logging - shows exactly what data we're receiving\nconsole.log(\"\ud83d\udd0d FUNCTION NODE DEBUG:\");\nconsole.log(\"Total items received:\", allItems.length);\nconsole.log(\"Current item keys:\", Object.keys(currentItem));\nconsole.log(\"Full item data:\", JSON.stringify(currentItem, null, 2));\n\nlet messageText = '';\nlet messageSource = '';\nlet originalMessage = null;\nlet telegramData = null;\n\n// Strategy 1: Look for original_message in current item (from Whisper API response)\nif (currentItem.original_message) {\n  originalMessage = currentItem.original_message;\n  console.log(\"\u2705 Found original_message in current item\");\n} \n\n// Strategy 2: Check if current item IS the original Telegram message\nelse if (currentItem.message && currentItem.message.from) {\n  originalMessage = currentItem;\n  console.log(\"\u2705 Current item appears to be the original Telegram message\");\n}\n\n// Strategy 3: Search through all items from merge node\nelse {\n  console.log(\"\ud83d\udd0d Searching through all items for Telegram data...\");\n  for (let i = 0; i < allItems.length; i++) {\n    const item = allItems[i].json;\n    console.log(`Item ${i} keys:`, Object.keys(item));\n    \n    // Look for Telegram message structure\n    if (item.message && item.message.from) {\n      originalMessage = item;\n      console.log(`\u2705 Found Telegram message in item ${i}`);\n      break;\n    }\n    \n    // Look for original_message field\n    if (item.original_message) {\n      originalMessage = item.original_message;\n      console.log(`\u2705 Found original_message field in item ${i}`);\n      break;\n    }\n  }\n}\n\n// Extract the actual Telegram message object\nif (originalMessage && originalMessage.message) {\n  telegramData = originalMessage.message;\n} else if (originalMessage && originalMessage.from) {\n  telegramData = originalMessage;\n} else {\n  console.log(\"\u274c Could not find Telegram message structure\");\n  telegramData = currentItem.message || {};\n}\n\n// Determine message text and source\nif (currentItem.needs_transcription !== false && currentItem.transcription) {\n  // Voice/Audio message with transcription\n  messageText = currentItem.transcription.text || \"Transcription failed\";\n  messageSource = `voice_message (${currentItem.message_type || 'voice'})`;\n  \n  if (currentItem.transcription.duration) {\n    messageSource += ` (${currentItem.transcription.duration}s)`;\n  }\n  \n  if (currentItem.transcription.confidence) {\n    messageSource += ` [confidence: ${Math.round(currentItem.transcription.confidence * 100)}%]`;\n  }\n  \n  console.log(\"\ud83d\udce2 Using transcribed voice message\");\n} else {\n  // Text message\n  messageText = currentItem.processed_text || \n               telegramData?.text || \n               currentItem.text || \n               'No text found';\n  messageSource = 'text_message';\n  console.log(\"\ud83d\udcdd Using text message\");\n}\n\n// Extract user information with multiple fallback strategies\nconst userId = telegramData?.from?.id || \n               originalMessage?.from?.id || \n               currentItem.user_id || \n               'unknown_user';\n\nconst username = telegramData?.from?.username || \n                 telegramData?.from?.first_name || \n                 originalMessage?.from?.username || \n                 originalMessage?.from?.first_name || \n                 currentItem.username || \n                 'unknown_user';\n\nconst chatId = telegramData?.chat?.id || \n               originalMessage?.chat?.id || \n               telegramData?.from?.id ||\n               originalMessage?.from?.id ||\n               currentItem.chat_id || \n               'unknown_chat';\n\nconst firstName = telegramData?.from?.first_name || \n                  originalMessage?.from?.first_name || \n                  currentItem.first_name || \n                  '';\n\nconst lastName = telegramData?.from?.last_name || \n                 originalMessage?.from?.last_name || \n                 currentItem.last_name || \n                 '';\n\n// Create comprehensive output for Oliver\nconsole.log(\"\ud83d\udce4 OUTPUT DATA:\");\nconsole.log(`User ID: ${userId}, Username: ${username}, Chat ID: ${chatId}`);\nconsole.log(`Message: \"${messageText}\" (Source: ${messageSource})`);\n\nreturn [{\n  json: {\n    processed_text: messageText,\n    message_source: messageSource,\n    user_id: userId,\n    username: username,\n    first_name: firstName,\n    last_name: lastName,\n    chat_id: chatId,\n    timestamp: new Date().toISOString(),\n    \n    // Additional context for Oliver\n    is_voice_message: messageSource.includes('voice'),\n    message_length: messageText.length,\n    \n    // Debugging information (remove in production)\n    debug: {\n      total_items_received: allItems.length,\n      found_original_message: !!originalMessage,\n      found_telegram_data: !!telegramData,\n      current_item_keys: Object.keys(currentItem),\n      has_transcription: !!currentItem.transcription\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        -512
+      ],
+      "id": "f83424ce-c2c9-40a5-bf42-3800e46edb22",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "122dba1a-313f-4ac0-9f21-f007065140e5",
+              "name": "message_type",
+              "value": "audio",
+              "type": "string"
+            },
+            {
+              "id": "2782e80a-6e69-4cf8-b134-3c2edad96aac",
+              "name": "needs_transcription",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "769a4b65-18c5-4e16-870e-58fea45a10ad",
+              "name": "file_id",
+              "value": "={{ $json.message.audio.file_id }}",
+              "type": "string"
+            },
+            {
+              "id": "24f48f1d-7da8-41a8-bb94-159ef2e06b40",
+              "name": "duration",
+              "value": "={{ $json.message.audio.duration }}",
+              "type": "number"
+            },
+            {
+              "id": "730123d2-45f1-4971-a27f-953daff08ed4",
+              "name": "mime_type",
+              "value": "={{ $json.message.audio.mime_type }}",
+              "type": "string"
+            },
+            {
+              "id": "8a8808ac-8bd2-448b-9823-f4f36bcc2abe",
+              "name": "original_message",
+              "value": "={{ $json.message }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        -496
+      ],
+      "id": "73953c9b-b2e3-4765-9fd3-b9556c599e76",
+      "name": "Prepare Audio Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "71afed6d-31d7-4dcd-8118-ff85fe61b0ee",
+              "name": "message_type",
+              "value": "text",
+              "type": "string"
+            },
+            {
+              "id": "dd7d22f6-2e74-4986-9470-87b2a8f2dd6b",
+              "name": "needs_transcription",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "bee1ba49-a324-4569-b123-4112352215d7",
+              "name": "processed_text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "36da0863-b5d8-4f02-a271-a0357a6d71bd",
+              "name": "oringal_message",
+              "value": "={{ $json.message }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        -240
+      ],
+      "id": "04ef86a0-0e59-4794-8361-6b3b08ab7606",
+      "name": "Prepare Text Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63fbc890-d175-4789-bf5a-f3cfe37ee880",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "9e591693-70dc-4104-8d17-fa2f29af079c",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "7bded721-653d-400c-b7c0-b5ed9260d922",
+              "name": "message_type",
+              "value": "={{ $('Merge').item.json.message_type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1600,
+        -304
+      ],
+      "id": "2ba3b6eb-2141-4dad-a449-d9d470e1e74d",
+      "name": "Format Response"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        -768
+      ],
+      "id": "a5ca26ee-a511-44dc-837f-4312e0b5e2f0",
+      "name": "Get a file",
+      "webhookId": "44180925-7618-4915-a6fe-1f2a78a0bfaa",
+      "credentials": {
+        "telegramApi": {
+          "id": "VaOPcW3yM4ybDnyz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "=You are a specialist agent mostly located in:\n\nzone_1:\n          name: \"Oliver-1\"\n          ip_address: \"192.168.50.51\"\n          location: \"Milling and Drilling Station\"\n          coverage_area: \"Precision machinery, drilling operations, CNC work\"\n          ai_focus:\n            - \"Tool safety monitoring for rotating machinery\"\n            - \"Precision measurement guidance\"\n            - \"Metal shaving and debris detection\"\n            - \"PPE compliance for machinery operation\"",
+        "text": "Hello what is your specialty?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        1312,
+        16
+      ],
+      "id": "05876b53-684c-4989-b651-35d92b1120ed",
+      "name": "Metal Shop Zone",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "text": "=You are a specialist agent located in:\nzone_2:\n          name: \"Oliver-2\" \n          ip_address: \"192.168.50.214\"\n          location: \"Electronics and Programming Station\"\n          coverage_area: \"Circuit work, soldering, programming, delicate electronics\"\n          ai_focus:\n            - \"Small component identification and placement\"\n            - \"Soldering technique guidance and safety\"\n            - \"Anti-static procedure monitoring\"\n            - \"Circuit board analysis and debugging assistance\"",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        1584,
+        16
+      ],
+      "id": "955eb1c0-859b-42bf-b88c-87f95365ae59",
+      "name": "Technology Zone",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        1856,
+        16
+      ],
+      "id": "e72c05d1-0413-4697-976b-a9faf7210d48",
+      "name": "Tool Shop Zone",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        2128,
+        16
+      ],
+      "id": "5629bfb8-e4f0-4da0-85db-7fe4a4c1a3d5",
+      "name": "Bike Shop Zone",
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message Type Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Type Router": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Audio Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Text Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Voice Data": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Voice Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Voice Message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Text Data": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Audio Data": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Voice Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Prepare Voice Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Metal Shop Zone": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technology Zone": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Shop Zone": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bike Shop Zone": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 442301319,
+          "message": {
+            "message_id": 543,
+            "from": {
+              "id": 7757312346,
+              "is_bot": false,
+              "first_name": "James",
+              "last_name": "Russell",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 7757312346,
+              "first_name": "James",
+              "last_name": "Russell",
+              "type": "private"
+            },
+            "date": 1755214201,
+            "voice": {
+              "duration": 9,
+              "mime_type": "audio/ogg",
+              "file_id": "AwACAgEAAxkBAAICH2iecXnZ04Kuei8aIxFwIZXm1Aw8AAJkBQACWPbxRHqqnSioPwKcNgQ",
+              "file_unique_id": "AgADZAUAAlj28UQ",
+              "file_size": 36702
+            }
+          }
+        }
+      }
+    ]
+  },
+  "versionId": "e862c9f3-33e8-4b87-a464-fbd38439a1d6",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-08-07T02:03:30.559Z",
+      "updatedAt": "2025-08-07T02:03:30.559Z",
+      "role": "workflow:owner",
+      "workflowId": "rKO0PUthz0jXtKhD",
+      "projectId": "bI9BuPcgB7dtJvSq",
+      "project": {
+        "createdAt": "2025-08-07T00:54:07.525Z",
+        "updatedAt": "2025-08-07T01:40:33.164Z",
+        "id": "bI9BuPcgB7dtJvSq",
+        "name": "Earl Russell <makesingularity@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-08-07T00:54:07.525Z",
+            "updatedAt": "2025-08-07T00:54:07.525Z",
+            "role": "project:personalOwner",
+            "userId": "3c9a9d24-5368-48ab-b1de-e06437484318",
+            "projectId": "bI9BuPcgB7dtJvSq",
+            "user": {
+              "createdAt": "2025-08-07T00:54:07.191Z",
+              "updatedAt": "2025-08-20T23:24:37.000Z",
+              "id": "3c9a9d24-5368-48ab-b1de-e06437484318",
+              "email": "makesingularity@gmail.com",
+              "firstName": "Earl",
+              "lastName": "Russell",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2025-08-07T01:42:29.981Z",
+                "personalization_survey_n8n_version": "1.104.2",
+                "automationGoalDevops": [
+                  "other"
+                ],
+                "automationGoalDevopsOther": "Looking to create a workshop assistant. ",
+                "companyIndustryExtended": [
+                  "manufacturing-industry"
+                ],
+                "companySize": "<20",
+                "companyType": "other",
+                "role": "engineering",
+                "reportedSource": "youtube"
+              },
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "rKO0PUthz0jXtKhD",
+                "userActivatedAt": 1754533947144,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1754802640013
+                }
+              },
+              "role": "global:owner",
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-08-20",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": []
+}

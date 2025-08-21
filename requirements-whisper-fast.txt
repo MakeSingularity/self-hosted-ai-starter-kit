@@ -1,0 +1,21 @@
+# Fast Whisper with CUDA support
+faster-whisper[cublas]==1.0.3
+
+# Core API dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+aiofiles==23.2.1
+
+# Audio processing
+ffmpeg-python==0.2.0
+pydub==0.25.1
+
+# Utility libraries
+httpx==0.25.2
+requests==2.31.0
+numpy==1.24.3
+torch==2.1.0
+
+# Logging and monitoring
+loguru==0.7.2

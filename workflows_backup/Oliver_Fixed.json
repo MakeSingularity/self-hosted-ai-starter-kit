@@ -1,0 +1,443 @@
+{
+    "name": "Oliver - Fixed",
+    "active": true,
+    "nodes": [
+        {
+            "parameters": {
+                "updates": [
+                    "message"
+                ],
+                "additionalFields": {}
+            },
+            "type": "n8n-nodes-base.telegramTrigger",
+            "typeVersion": 1.2,
+            "position": [
+                240,
+                300
+            ],
+            "id": "telegram-trigger",
+            "name": "Telegram Trigger",
+            "credentials": {
+                "telegramApi": {
+                    "id": "VaOPcW3yM4ybDnyz",
+                    "name": "Telegram account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "rules": {
+                    "values": [
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict"
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.message.voice }}",
+                                        "rightValue": "",
+                                        "operator": {
+                                            "type": "object",
+                                            "operation": "exists"
+                                        }
+                                    }
+                                ]
+                            },
+                            "renameOutput": true,
+                            "outputKey": "voice"
+                        },
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict"
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.message.text }}",
+                                        "rightValue": "",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "exists"
+                                        }
+                                    }
+                                ]
+                            },
+                            "renameOutput": true,
+                            "outputKey": "text"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 3.2,
+            "position": [
+                480,
+                300
+            ],
+            "id": "message-router",
+            "name": "Message Router"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Simple voice message handler for Oliver\nconst message = $input.item.json.message;\n\n// Extract voice file information\nconst voiceData = {\n  file_id: message.voice.file_id,\n  file_unique_id: message.voice.file_unique_id,\n  duration: message.voice.duration,\n  mime_type: message.voice.mime_type || 'audio/ogg',\n  file_size: message.voice.file_size\n};\n\n// User information\nconst userData = {\n  user_id: message.from.id,\n  username: message.from.username || message.from.first_name,\n  first_name: message.from.first_name,\n  last_name: message.from.last_name,\n  chat_id: message.chat.id\n};\n\nconsole.log('🎤 Processing voice message:', voiceData.file_unique_id);\n\nreturn {\n  json: {\n    message_type: 'voice',\n    voice_data: voiceData,\n    user_data: userData,\n    original_message: message,\n    needs_transcription: true,\n    timestamp: new Date().toISOString()\n  }\n};"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                720,
+                200
+            ],
+            "id": "process-voice",
+            "name": "Process Voice"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Simple text message handler for Oliver\nconst message = $input.item.json.message;\n\n// User information\nconst userData = {\n  user_id: message.from.id,\n  username: message.from.username || message.from.first_name,\n  first_name: message.from.first_name,\n  last_name: message.from.last_name,\n  chat_id: message.chat.id\n};\n\nconsole.log('📝 Processing text message from:', userData.username);\n\nreturn {\n  json: {\n    message_type: 'text',\n    text: message.text,\n    user_data: userData,\n    original_message: message,\n    needs_transcription: false,\n    timestamp: new Date().toISOString()\n  }\n};"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                720,
+                400
+            ],
+            "id": "process-text",
+            "name": "Process Text"
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "leftValue": "={{ $json.needs_transcription }}",
+                            "rightValue": true,
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "equal"
+                            }
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                960,
+                300
+            ],
+            "id": "check-transcription",
+            "name": "Needs Transcription?"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "http://whisper-api:8000/transcribe/telegram",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "file_id",
+                            "value": "={{ $json.voice_data.file_id }}"
+                        },
+                        {
+                            "name": "file_unique_id",
+                            "value": "={{ $json.voice_data.file_unique_id }}"
+                        },
+                        {
+                            "name": "duration",
+                            "value": "={{ $json.voice_data.duration }}"
+                        }
+                    ]
+                },
+                "options": {
+                    "timeout": 30000
+                }
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1200,
+                200
+            ],
+            "id": "transcribe-voice",
+            "name": "Transcribe Voice"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Combine transcription with original data\nconst originalData = $input.all()[0].json;\nconst transcriptionResult = $input.item.json;\n\nconsole.log('🔄 Combining transcription with original data');\n\n// Check if transcription was successful\nlet finalText = '';\nif (transcriptionResult.success && transcriptionResult.text) {\n  finalText = transcriptionResult.text;\n  console.log('✅ Transcription successful:', finalText.substring(0, 50) + '...');\n} else {\n  finalText = 'Sorry, I could not transcribe your voice message.';\n  console.log('❌ Transcription failed');\n}\n\nreturn {\n  json: {\n    text: finalText,\n    message_type: originalData.message_type,\n    user_data: originalData.user_data,\n    transcription_success: transcriptionResult.success || false,\n    timestamp: new Date().toISOString()\n  }\n};"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1440,
+                200
+            ],
+            "id": "combine-transcription",
+            "name": "Combine Transcription"
+        },
+        {
+            "parameters": {
+                "mode": "combine",
+                "combineBy": "combineByPosition",
+                "options": {
+                    "includeUnpaired": true
+                }
+            },
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3.2,
+            "position": [
+                1200,
+                350
+            ],
+            "id": "merge-messages",
+            "name": "Merge Messages"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $json.text }}",
+                "options": {
+                    "systemMessage": "You are Oliver, a helpful AI workshop assistant. You help users with various tasks in their workshop. Today is {{ DateTime.now().toLocaleString(DateTime.DATETIME_FULL) }}.\n\nThe user's name is {{ $json.user_data.first_name || 'there' }}. Be helpful, friendly, and knowledgeable about workshop tools, maintenance, and general assistance.\n\nAlways respond in HTML format for Telegram:\n- Use <b>bold</b> for emphasis\n- Use <i>italic</i> for technical terms\n- Use <code>code</code> for specific values\n- Use <pre>pre-formatted</pre> for code blocks\n\nKeep responses concise but helpful."
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 2.1,
+            "position": [
+                1440,
+                350
+            ],
+            "id": "oliver-ai",
+            "name": "Oliver AI"
+        },
+        {
+            "parameters": {
+                "model": "llama3.1:latest",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+            "typeVersion": 1,
+            "position": [
+                1200,
+                500
+            ],
+            "id": "ollama-model",
+            "name": "Ollama Model",
+            "credentials": {
+                "ollamaApi": {
+                    "id": "0qHm0xDUjhVUNjkF",
+                    "name": "Ollama account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "sessionIdType": "customKey",
+                "sessionKey": "={{ $json.user_data.user_id }}"
+            },
+            "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+            "typeVersion": 1.3,
+            "position": [
+                1440,
+                500
+            ],
+            "id": "chat-memory",
+            "name": "Chat Memory",
+            "credentials": {
+                "postgres": {
+                    "id": "KQ9ZVAiIXsIsOUpA",
+                    "name": "Postgres account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "chatId": "={{ $json.user_data.chat_id }}",
+                "text": "={{ $json.output }}",
+                "additionalFields": {
+                    "parse_mode": "HTML"
+                }
+            },
+            "type": "n8n-nodes-base.telegram",
+            "typeVersion": 1.2,
+            "position": [
+                1680,
+                350
+            ],
+            "id": "send-response",
+            "name": "Send Response",
+            "credentials": {
+                "telegramApi": {
+                    "id": "VaOPcW3yM4ybDnyz",
+                    "name": "Telegram account"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Telegram Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Message Router",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Message Router": {
+            "main": [
+                [
+                    {
+                        "node": "Process Voice",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Process Text",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Process Voice": {
+            "main": [
+                [
+                    {
+                        "node": "Needs Transcription?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Process Text": {
+            "main": [
+                [
+                    {
+                        "node": "Needs Transcription?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Needs Transcription?": {
+            "main": [
+                [
+                    {
+                        "node": "Transcribe Voice",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Merge Messages",
+                        "type": "main",
+                        "index": 1
+                    }
+                ]
+            ]
+        },
+        "Transcribe Voice": {
+            "main": [
+                [
+                    {
+                        "node": "Combine Transcription",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Combine Transcription": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Messages",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Merge Messages": {
+            "main": [
+                [
+                    {
+                        "node": "Oliver AI",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Oliver AI": {
+            "main": [
+                [
+                    {
+                        "node": "Send Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Ollama Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Oliver AI",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Chat Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "Oliver AI",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1",
+        "callerPolicy": "workflowsFromSameOwner"
+    },
+    "staticData": null,
+    "tags": [
+        "oliver",
+        "workshop-assistant",
+        "fixed"
+    ]
+}

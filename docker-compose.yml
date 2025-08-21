@@ -90,6 +90,10 @@ services:
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
       - N8N_API_BASE_URL=http://localhost:5678/api/v1/
       - N8N_DISABLE_UI=false
+      # Fix trust proxy and task runner warnings
+      - N8N_TRUST_PROXY=true
+      - N8N_RUNNERS_ENABLED=true
+      - DB_SQLITE_POOL_SIZE=10
     ports:
       - 5678:5678
     volumes:
