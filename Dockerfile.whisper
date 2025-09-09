@@ -1,5 +1,5 @@
 # Dockerfile for Fast Whisper Speech Recognition API with CUDA support
-FROM nvidia/cuda:12.1-devel-ubuntu22.04
+FROM python:3.11-slim
 
 WORKDIR /app
 

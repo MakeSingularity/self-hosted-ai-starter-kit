@@ -1,0 +1,139 @@
+{
+  "discovery_time": "2025-08-31 09:22:40",
+  "discovery_results": {
+    "oliver_fabrication": {
+      "ip": "192.168.50.51",
+      "onvif_endpoints": [],
+      "media_service": null,
+      "stream_uris": [],
+      "recommended_rtsp": null,
+      "fallback_rtsp": [
+        "rtsp://admin:D34D8YT3@192.168.50.51:554/live/1",
+        "rtsp://admin:D34D8YT3@192.168.50.51:554/stream1",
+        "rtsp://admin:D34D8YT3@192.168.50.51:554/video1",
+        "rtsp://admin:D34D8YT3@192.168.50.51:554/1"
+      ]
+    },
+    "oliver_technology": {
+      "ip": "192.168.50.214",
+      "onvif_endpoints": [],
+      "media_service": null,
+      "stream_uris": [],
+      "recommended_rtsp": null,
+      "fallback_rtsp": [
+        "rtsp://admin:D34D8YT3@192.168.50.214:554/live/1",
+        "rtsp://admin:D34D8YT3@192.168.50.214:554/stream1",
+        "rtsp://admin:D34D8YT3@192.168.50.214:554/video1",
+        "rtsp://admin:D34D8YT3@192.168.50.214:554/1"
+      ]
+    },
+    "oliver_motorcycle": {
+      "ip": "192.168.50.222",
+      "onvif_endpoints": [],
+      "media_service": null,
+      "stream_uris": [],
+      "recommended_rtsp": null,
+      "fallback_rtsp": [
+        "rtsp://admin:D34D8YT3@192.168.50.222:554/live/1",
+        "rtsp://admin:D34D8YT3@192.168.50.222:554/stream1",
+        "rtsp://admin:D34D8YT3@192.168.50.222:554/video1",
+        "rtsp://admin:D34D8YT3@192.168.50.222:554/1"
+      ]
+    },
+    "oliver_toolsupply": {
+      "ip": "192.168.50.248",
+      "onvif_endpoints": [],
+      "media_service": null,
+      "stream_uris": [],
+      "recommended_rtsp": null,
+      "fallback_rtsp": [
+        "rtsp://admin:D34D8YT3@192.168.50.248:554/live/1",
+        "rtsp://admin:D34D8YT3@192.168.50.248:554/stream1",
+        "rtsp://admin:D34D8YT3@192.168.50.248:554/video1",
+        "rtsp://admin:D34D8YT3@192.168.50.248:554/1"
+      ]
+    }
+  },
+  "frigate_config": {
+    "oliver_fabrication": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.51:554/live/1",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream"
+      },
+      "onvif": {
+        "host": "192.168.50.51",
+        "port": 80,
+        "user": "admin",
+        "password": "D34D8YT3"
+      }
+    },
+    "oliver_technology": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.214:554/live/1",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream"
+      },
+      "onvif": {
+        "host": "192.168.50.214",
+        "port": 80,
+        "user": "admin",
+        "password": "D34D8YT3"
+      }
+    },
+    "oliver_motorcycle": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.222:554/live/1",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream"
+      },
+      "onvif": {
+        "host": "192.168.50.222",
+        "port": 80,
+        "user": "admin",
+        "password": "D34D8YT3"
+      }
+    },
+    "oliver_toolsupply": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.248:554/live/1",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream"
+      },
+      "onvif": {
+        "host": "192.168.50.248",
+        "port": 80,
+        "user": "admin",
+        "password": "D34D8YT3"
+      }
+    }
+  }
+}

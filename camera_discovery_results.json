@@ -1,0 +1,217 @@
+{
+  "discovery_results": {
+    "192.168.50.51": {
+      "onvif_port": 80,
+      "rtsp_available": true,
+      "suggested_rtsp_urls": [
+        "rtsp://admin:D34D8YT3@192.168.50.51:554/live/1/h264",
+        "rtsp://admin:D34D8YT3@192.168.50.51:554/live/0/h264",
+        "rtsp://admin:D34D8YT3@192.168.50.51:554/live/main"
+      ],
+      "recommended_url": "rtsp://admin:D34D8YT3@192.168.50.51:554/live/1/h264"
+    },
+    "192.168.50.214": {
+      "onvif_port": 80,
+      "rtsp_available": true,
+      "suggested_rtsp_urls": [
+        "rtsp://admin:D34D8YT3@192.168.50.214:554/live/1/h264",
+        "rtsp://admin:D34D8YT3@192.168.50.214:554/live/0/h264",
+        "rtsp://admin:D34D8YT3@192.168.50.214:554/live/main"
+      ],
+      "recommended_url": "rtsp://admin:D34D8YT3@192.168.50.214:554/live/1/h264"
+    },
+    "192.168.50.222": {
+      "onvif_port": 80,
+      "rtsp_available": true,
+      "suggested_rtsp_urls": [
+        "rtsp://admin:D34D8YT3@192.168.50.222:554/live/1/h264",
+        "rtsp://admin:D34D8YT3@192.168.50.222:554/live/0/h264",
+        "rtsp://admin:D34D8YT3@192.168.50.222:554/live/main"
+      ],
+      "recommended_url": "rtsp://admin:D34D8YT3@192.168.50.222:554/live/1/h264"
+    },
+    "192.168.50.248": {
+      "onvif_port": 80,
+      "rtsp_available": true,
+      "suggested_rtsp_urls": [
+        "rtsp://admin:D34D8YT3@192.168.50.248:554/live/1/h264",
+        "rtsp://admin:D34D8YT3@192.168.50.248:554/live/0/h264",
+        "rtsp://admin:D34D8YT3@192.168.50.248:554/live/main"
+      ],
+      "recommended_url": "rtsp://admin:D34D8YT3@192.168.50.248:554/live/1/h264"
+    }
+  },
+  "frigate_config": {
+    "oliver_fabrication": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.51:554/live/1/h264",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream",
+        "output_args": {
+          "record": "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an"
+        }
+      },
+      "detect": {
+        "width": 640,
+        "height": 360,
+        "fps": 5
+      },
+      "record": {
+        "enabled": true,
+        "retain": {
+          "days": 30,
+          "mode": "motion"
+        }
+      },
+      "objects": {
+        "track": [
+          "person",
+          "car",
+          "bicycle",
+          "truck"
+        ]
+      },
+      "onvif": {
+        "host": "192.168.50.51",
+        "port": 80,
+        "user": "admin",
+        "password": "D34D8YT3"
+      }
+    },
+    "oliver_technology": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.214:554/live/1/h264",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream",
+        "output_args": {
+          "record": "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an"
+        }
+      },
+      "detect": {
+        "width": 640,
+        "height": 360,
+        "fps": 5
+      },
+      "record": {
+        "enabled": true,
+        "retain": {
+          "days": 30,
+          "mode": "motion"
+        }
+      },
+      "objects": {
+        "track": [
+          "person",
+          "car",
+          "bicycle"
+        ]
+      },
+      "onvif": {
+        "host": "192.168.50.214",
+        "port": 80,
+        "user": "admin",
+        "password": "D34D8YT3"
+      }
+    },
+    "oliver_motorcycle": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.222:554/live/1/h264",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream",
+        "output_args": {
+          "record": "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an"
+        }
+      },
+      "detect": {
+        "width": 640,
+        "height": 360,
+        "fps": 5
+      },
+      "record": {
+        "enabled": true,
+        "retain": {
+          "days": 30,
+          "mode": "motion"
+        }
+      },
+      "objects": {
+        "track": [
+          "person",
+          "car",
+          "bicycle",
+          "motorcycle"
+        ]
+      },
+      "onvif": {
+        "host": "192.168.50.222",
+        "port": 80,
+        "user": "admin",
+        "password": "D34D8YT3"
+      }
+    },
+    "oliver_toolsupply": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.248:554/live/1/h264",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream",
+        "output_args": {
+          "record": "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an"
+        }
+      },
+      "detect": {
+        "width": 640,
+        "height": 360,
+        "fps": 5
+      },
+      "record": {
+        "enabled": true,
+        "retain": {
+          "days": 30,
+          "mode": "motion"
+        }
+      },
+      "objects": {
+        "track": [
+          "person",
+          "car",
+          "bicycle"
+        ]
+      },
+      "onvif": {
+        "host": "192.168.50.248",
+        "port": 80,
+        "user": "admin",
+        "password": "D34D8YT3"
+      }
+    }
+  },
+  "discovery_time": "2025-08-31 09:19:40"
+}

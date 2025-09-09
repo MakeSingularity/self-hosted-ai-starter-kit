@@ -60,8 +60,9 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit"
     },
-    "python.defaultInterpreterPath": "./.venv/Scripts/python.exe",
+    "python.defaultInterpreterPath": "C:\\Users\\makes\\miniconda3\\envs\\oliver\\python.exe",
     "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
     "workbench.colorCustomizations": {
         "terminal.ansiBlue": "#3794ff",
         "terminal.ansiGreen": "#14a085",

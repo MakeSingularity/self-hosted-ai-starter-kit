@@ -1,0 +1,172 @@
+{
+  "cameras": [
+    {
+      "ip": "192.168.50.248",
+      "device_info": {
+        "manufacturer": "Unknown",
+        "model": "Unknown",
+        "serial": "Unknown",
+        "firmware": "Unknown"
+      },
+      "streams": {
+        "main": {
+          "rtsp_url": "rtsp://admin:D34D8YT3@192.168.50.248:554/live/main",
+          "token": "main",
+          "video_encoding": "H264",
+          "resolution": "1920x1080",
+          "audio_encoding": null
+        }
+      },
+      "ptz_available": false
+    },
+    {
+      "ip": "192.168.50.214",
+      "device_info": {
+        "manufacturer": "Unknown",
+        "model": "Unknown",
+        "serial": "Unknown",
+        "firmware": "Unknown"
+      },
+      "streams": {
+        "main": {
+          "rtsp_url": "rtsp://admin:D34D8YT3@192.168.50.214:554/live/main",
+          "token": "main",
+          "video_encoding": "H264",
+          "resolution": "1920x1080",
+          "audio_encoding": null
+        }
+      },
+      "ptz_available": false
+    },
+    {
+      "ip": "192.168.50.222",
+      "device_info": {
+        "manufacturer": "Unknown",
+        "model": "Unknown",
+        "serial": "Unknown",
+        "firmware": "Unknown"
+      },
+      "streams": {
+        "main": {
+          "rtsp_url": "rtsp://admin:D34D8YT3@192.168.50.222:554/live/main",
+          "token": "main",
+          "video_encoding": "H264",
+          "resolution": "1920x1080",
+          "audio_encoding": null
+        }
+      },
+      "ptz_available": false
+    }
+  ],
+  "frigate_config": {
+    "oliver_camera_1": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.248:554/live/main",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream",
+        "output_args": {
+          "record": "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an"
+        }
+      },
+      "detect": {
+        "width": 1920,
+        "height": 1080,
+        "fps": 5
+      },
+      "record": {
+        "enabled": true,
+        "retain": {
+          "days": 30,
+          "mode": "motion"
+        }
+      },
+      "objects": {
+        "track": [
+          "person",
+          "car",
+          "bicycle"
+        ]
+      }
+    },
+    "oliver_camera_2": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.214:554/live/main",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream",
+        "output_args": {
+          "record": "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an"
+        }
+      },
+      "detect": {
+        "width": 1920,
+        "height": 1080,
+        "fps": 5
+      },
+      "record": {
+        "enabled": true,
+        "retain": {
+          "days": 30,
+          "mode": "motion"
+        }
+      },
+      "objects": {
+        "track": [
+          "person",
+          "car",
+          "bicycle"
+        ]
+      }
+    },
+    "oliver_camera_3": {
+      "ffmpeg": {
+        "inputs": [
+          {
+            "path": "rtsp://admin:D34D8YT3@192.168.50.222:554/live/main",
+            "roles": [
+              "detect",
+              "record"
+            ]
+          }
+        ],
+        "input_args": "preset-rtsp-restream",
+        "output_args": {
+          "record": "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an"
+        }
+      },
+      "detect": {
+        "width": 1920,
+        "height": 1080,
+        "fps": 5
+      },
+      "record": {
+        "enabled": true,
+        "retain": {
+          "days": 30,
+          "mode": "motion"
+        }
+      },
+      "objects": {
+        "track": [
+          "person",
+          "car",
+          "bicycle"
+        ]
+      }
+    }
+  },
+  "discovery_time": "2025-08-31 09:14:49"
+}

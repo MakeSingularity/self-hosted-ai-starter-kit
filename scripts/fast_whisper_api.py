@@ -4,7 +4,7 @@ Fast Whisper API Server using faster-whisper with CUDA acceleration
 Optimized for reliability and performance with large-v3 model
 """
 
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Request
 import uvicorn
 import os
 import tempfile
@@ -15,10 +15,70 @@ import json
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import time
+import aiohttp
+import aiofiles
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Telegram Bot Token (set this in your environment)
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+
+class TelegramFileDownloader:
+    """Handle Telegram file downloads"""
+    
+    def __init__(self, bot_token: str):
+        self.bot_token = bot_token
+        self.base_url = f"https://api.telegram.org/bot{bot_token}"
+        
+    async def download_file(self, file_id: str, output_path: str) -> bool:
+        """Download a file from Telegram by file_id"""
+        if not self.bot_token:
+            logger.error("❌ Telegram bot token not provided")
+            return False
+            
+        try:
+            # First, get the file path
+            async with aiohttp.ClientSession() as session:
+                # Get file info
+                file_info_url = f"{self.base_url}/getFile?file_id={file_id}"
+                logger.info(f"📋 Getting file info: {file_info_url}")
+                
+                async with session.get(file_info_url) as response:
+                    if response.status != 200:
+                        logger.error(f"❌ Failed to get file info: {response.status}")
+                        return False
+                    
+                    file_data = await response.json()
+                    
+                    if not file_data.get("ok"):
+                        logger.error(f"❌ Telegram API error: {file_data}")
+                        return False
+                    
+                    file_path = file_data["result"]["file_path"]
+                    logger.info(f"📁 File path: {file_path}")
+                
+                # Download the actual file
+                download_url = f"https://api.telegram.org/file/bot{self.bot_token}/{file_path}"
+                logger.info(f"⬇️ Downloading: {download_url}")
+                
+                async with session.get(download_url) as response:
+                    if response.status != 200:
+                        logger.error(f"❌ Failed to download file: {response.status}")
+                        return False
+                    
+                    # Save file
+                    async with aiofiles.open(output_path, 'wb') as f:
+                        async for chunk in response.content.iter_chunked(8192):
+                            await f.write(chunk)
+                    
+                    logger.info(f"✅ File downloaded successfully: {output_path}")
+                    return True
+                    
+        except Exception as e:
+            logger.error(f"❌ Download failed: {e}")
+            return False
 
 try:
     from faster_whisper import WhisperModel
@@ -147,6 +207,9 @@ class FastWhisperService:
 # Initialize the service
 whisper_service = FastWhisperService()
 
+# Initialize Telegram downloader
+telegram_downloader = TelegramFileDownloader(TELEGRAM_BOT_TOKEN)
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize the Whisper model on startup"""
@@ -209,6 +272,33 @@ async def get_status():
         logger.error(f"Status check failed: {e}")
         return {"error": str(e), "status": "error"}
 
+@app.post("/debug/request")
+async def debug_request(request: Request):
+    """Debug endpoint to see exactly what n8n is sending"""
+    try:
+        body_bytes = await request.body()
+        body_str = body_bytes.decode('utf-8')
+        
+        # Try to parse as JSON
+        try:
+            parsed_json = json.loads(body_str)
+            json_valid = True
+        except:
+            parsed_json = None
+            json_valid = False
+        
+        return {
+            "raw_body": body_str,
+            "body_length": len(body_str),
+            "content_type": request.headers.get("content-type"),
+            "json_valid": json_valid,
+            "parsed_json": parsed_json,
+            "headers": dict(request.headers),
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        return {"error": str(e), "timestamp": time.time()}
+
 @app.post("/transcribe/file")
 async def transcribe_file(file: UploadFile = File(...), language: Optional[str] = None):
     """Transcribe an uploaded audio file"""
@@ -249,7 +339,7 @@ async def transcribe_file(file: UploadFile = File(...), language: Optional[str] 
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/transcribe/n8n")
-async def transcribe_for_n8n(request: Dict):
+async def transcribe_for_n8n(request: Request):
     """Optimized endpoint for n8n workflow integration"""
     if not whisper_service.model:
         return {
@@ -261,21 +351,40 @@ async def transcribe_for_n8n(request: Dict):
         }
     
     try:
-        logger.info(f"📥 n8n request: {type(request)}")
+        # Get the request body as bytes first
+        body_bytes = await request.body()
+        body_str = body_bytes.decode('utf-8')
         
-        # Handle malformed requests
-        if isinstance(request, str):
-            logger.error(f"Received string instead of dict: {request}")
+        logger.info(f"📥 n8n raw body: {body_str[:200]}...")
+        
+        # Try to parse as JSON
+        try:
+            request_data = json.loads(body_str)
+            logger.info(f"✅ Successfully parsed JSON, type: {type(request_data)}")
+        except json.JSONDecodeError as e:
+            logger.error(f"❌ JSON decode error: {e}")
             return {
                 "success": False,
-                "error": "Expected JSON object",
+                "error": f"Invalid JSON: {str(e)}",
                 "message_type": "unknown",
-                "transcription": {"text": "Invalid request format"},
+                "transcription": {"text": "JSON parsing failed"},
+                "needs_transcription": True,
+                "raw_body": body_str[:100]
+            }
+        
+        # Now request_data should be a dict
+        if not isinstance(request_data, dict):
+            logger.error(f"❌ Parsed data is not a dict: {type(request_data)}")
+            return {
+                "success": False,
+                "error": f"Expected dict, got {type(request_data)}",
+                "message_type": "unknown", 
+                "transcription": {"text": "Invalid data type"},
                 "needs_transcription": True
             }
         
         # Extract message data
-        message = request.get("message", {})
+        message = request_data.get("message", {})
         voice_data = message.get("voice", {})
         audio_data = message.get("audio", {})
         
@@ -297,28 +406,100 @@ async def transcribe_for_n8n(request: Dict):
                 "original_message": message
             }
         
-        # For now, return placeholder since we need Telegram file download
+        # Extract file information
         duration = file_info.get("duration", 0)
         file_id = file_info.get("file_id", "unknown")
         
         logger.info(f"🎤 Processing {message_type} message: {file_id} ({duration}s)")
         
-        return {
-            "success": True,
-            "message_type": message_type,
-            "transcription": {
-                "text": f"[Fast Whisper transcription ready - {duration}s {message_type} message]",
-                "confidence": 0.95,
-                "language": "en",
-                "duration": duration,
-                "model_used": whisper_service.model_size,
-                "device": whisper_service.device
-            },
-            "original_message": message,
-            "needs_transcription": True,
-            "note": "Telegram file download integration needed",
-            "file_id": file_id
-        }
+        # Check if we have a bot token for downloading
+        if not TELEGRAM_BOT_TOKEN:
+            logger.warning("⚠️ TELEGRAM_BOT_TOKEN not set - cannot download file")
+            return {
+                "success": False,
+                "error": "TELEGRAM_BOT_TOKEN not configured",
+                "message_type": message_type,
+                "transcription": {"text": "Voice message received but bot token not configured"},
+                "needs_transcription": True,
+                "original_message": message,
+                "setup_required": "Set TELEGRAM_BOT_TOKEN environment variable",
+                "file_id": file_id
+            }
+        
+        # Download and transcribe the audio file
+        try:
+            # Create temporary file path
+            temp_filename = f"telegram_{file_id}_{int(time.time())}.ogg"
+            temp_filepath = whisper_service.temp_dir / temp_filename
+            
+            logger.info(f"⬇️ Downloading file {file_id} to {temp_filepath}")
+            
+            # Download the file
+            download_success = await telegram_downloader.download_file(file_id, str(temp_filepath))
+            
+            if not download_success:
+                return {
+                    "success": False,
+                    "error": "Failed to download audio file from Telegram",
+                    "message_type": message_type,
+                    "transcription": {"text": "File download failed"},
+                    "needs_transcription": True,
+                    "file_id": file_id
+                }
+            
+            # Transcribe the audio file
+            logger.info(f"🎵 Transcribing audio file: {temp_filepath}")
+            
+            loop = asyncio.get_event_loop()
+            transcription_result = await loop.run_in_executor(
+                whisper_service.executor,
+                whisper_service.transcribe_audio,
+                str(temp_filepath)
+            )
+            
+            # Clean up the temporary file
+            temp_filepath.unlink(missing_ok=True)
+            
+            if transcription_result.get("success"):
+                logger.info(f"✅ Transcription successful: {transcription_result['text'][:100]}...")
+                
+                return {
+                    "success": True,
+                    "message_type": message_type,
+                    "transcription": {
+                        "text": transcription_result["text"],
+                        "confidence": transcription_result.get("language_probability", 0.95),
+                        "language": transcription_result.get("language", "unknown"),
+                        "duration": transcription_result.get("duration", duration),
+                        "model_used": transcription_result.get("model_used", whisper_service.model_size),
+                        "device": transcription_result.get("device", whisper_service.device),
+                        "transcription_time": transcription_result.get("transcription_time", 0)
+                    },
+                    "original_message": message,
+                    "needs_transcription": False,
+                    "file_id": file_id
+                }
+            else:
+                logger.error(f"❌ Transcription failed: {transcription_result.get('error')}")
+                return {
+                    "success": False,
+                    "error": f"Transcription failed: {transcription_result.get('error')}",
+                    "message_type": message_type,
+                    "transcription": {"text": "Transcription failed"},
+                    "needs_transcription": True,
+                    "file_id": file_id
+                }
+                
+        except Exception as e:
+            logger.error(f"❌ Error during transcription process: {e}")
+            return {
+                "success": False,
+                "error": f"Transcription process error: {str(e)}",
+                "message_type": message_type,
+                "transcription": {"text": "Processing error"},
+                "needs_transcription": True,
+                "file_id": file_id
+            }
         
     except Exception as e:
         logger.error(f"n8n transcription failed: {e}")

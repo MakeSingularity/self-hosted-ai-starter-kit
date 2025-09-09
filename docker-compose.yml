@@ -114,24 +114,63 @@ services:
     volumes:
       - ./data/qdrant:/qdrant/storage
 
-  whisper-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.whisper
-    hostname: whisper-api
-    container_name: whisper-api
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable
+    container_name: frigate
+    hostname: frigate
     networks: ['demo']
     restart: unless-stopped
+    profiles: ['cameras', 'gpu-nvidia']
+    env_file:
+      - .env
     ports:
-      - 8000:8000
+      - "5000:5000"  # Web UI
+      - "8554:8554"  # RTSP re-stream
+      - "8555:8555/tcp" # WebRTC
+      - "8555:8555/udp" # WebRTC
     environment:
-      - OLLAMA_URL=http://ollama:11434
+      - FRIGATE_RTSP_PASSWORD=${FRIGATE_RTSP_PASSWORD}
+      - FRIGATE_RTSP_USER=${FRIGATE_RTSP_USER}
+      - OLIVER_FABRICATION_RTSP_PATH=${OLIVER_FABRICATION_RTSP_PATH}
+      - OLIVER_TECHNOLOGY_RTSP_PATH=${OLIVER_TECHNOLOGY_RTSP_PATH}
+      - OLIVER_MOTORCYCLE_RTSP_PATH=${OLIVER_MOTORCYCLE_RTSP_PATH}
+      - OLIVER_TOOLSUPPLY_RTSP_PATH=${OLIVER_TOOLSUPPLY_RTSP_PATH}
     volumes:
-      - ./scripts:/app/scripts:ro
-      - ./temp:/app/temp:rw
-    depends_on:
-      - ollama-gpu
-    profiles: ["gpu-nvidia"]
+      - ./config/frigate.yml:/config/config.yml:ro
+      - ./data/frigate:/media/frigate
+      - type: tmpfs # Optional: faster processing
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000 # 1GB
+    shm_size: "256mb" # Increase if multiple cameras
+    devices:
+      - /dev/dri:/dev/dri # For hardware acceleration
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia # GPU acceleration for detection
+              count: 1
+              capabilities: [gpu]
+
+  # whisper-api:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.whisper
+  #   hostname: whisper-api
+  #   container_name: whisper-api
+  #   networks: ['demo']
+  #   restart: unless-stopped
+  #   ports:
+  #     - 8000:8000
+  #   environment:
+  #     - OLLAMA_URL=http://ollama:11434
+  #   volumes:
+  #     - ./scripts:/app/scripts:ro
+  #     - ./temp:/app/temp:rw
+  #   depends_on:
+  #     - ollama-gpu
+  #   profiles: ["gpu-nvidia"]
 
   ollama-cpu:
     profiles: ["cpu"]

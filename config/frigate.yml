@@ -1,0 +1,156 @@
+﻿mqtt:
+  # Optional: Enable for advanced automation with n8n workflows
+  enabled: false
+
+database:
+  path: /media/frigate/frigate.db
+
+# Define Oliver's 4 Zone Cameras with correct RTSP paths from AgentDVR
+cameras:
+  oliver_fabrication:
+    ffmpeg:
+      inputs:
+        - path: rtsp://admin:D34D8YT3@192.168.50.51:554/live/1jfiegbscbeha_p3_OTUJPAVVDCFG
+          roles:
+            - detect
+            - record
+      output_args:
+        record: -f mp4 -movflags frag_keyframe+empty_moov -an
+    detect:
+      width: 640
+      height: 360
+      fps: 5
+    record:
+      enabled: true
+      retain:
+        days: 30
+        mode: motion
+    objects:
+      track:
+        - person
+        - car
+        - truck
+        - bicycle
+        - bottle
+        - cup
+      filters:
+        person:
+          min_area: 1000
+          threshold: 0.7
+
+  oliver_technology:
+    ffmpeg:
+      inputs:
+        - path: rtsp://admin:D34D8YT3@192.168.50.214:554/live/1jfiegbscbbha_p3_RBRXWLBLXIHI
+          roles:
+            - detect
+            - record
+      output_args:
+        record: -f mp4 -movflags frag_keyframe+empty_moov -an
+    detect:
+      width: 640
+      height: 360
+      fps: 5
+    record:
+      enabled: true
+      retain:
+        days: 30
+        mode: motion
+    objects:
+      track:
+        - person
+        - car
+        - bicycle
+
+  oliver_motorcycle:
+    ffmpeg:
+      inputs:
+        - path: rtsp://admin:D34D8YT3@192.168.50.222:554/live/1jfiegbsb4wdq_p3_RSHJBMDGRXXE
+          roles:
+            - detect
+            - record
+      output_args:
+        record: -f mp4 -movflags frag_keyframe+empty_moov -an
+    detect:
+      width: 1920
+      height: 1080
+      fps: 5
+    record:
+      enabled: true
+      retain:
+        days: 30
+        mode: motion
+    objects:
+      track:
+        - person
+        - car
+        - bicycle
+        - motorcycle
+
+  oliver_toolsupply:
+    ffmpeg:
+      inputs:
+        - path: rtsp://admin:D34D8YT3@192.168.50.248:554/live/1jfiegbscbbma_p3_TWDXHVIKKSUL
+          roles:
+            - detect
+            - record
+      output_args:
+        record: -f mp4 -movflags frag_keyframe+empty_moov -an
+    detect:
+      width: 1920
+      height: 1080
+      fps: 5
+    record:
+      enabled: true
+      retain:
+        days: 30
+        mode: motion
+    objects:
+      track:
+        - person
+        - car
+        - bicycle
+
+detectors:
+  ov:
+    type: openvino
+    device: AUTO
+
+model:
+  path: /openvino-model/ssdlite_mobilenet_v2.xml
+  input_tensor: nhwc
+  input_pixel_format: bgr
+  width: 300
+  height: 300
+
+# Motion detection settings
+motion:
+  mask: ""
+  improve_contrast: true
+  threshold: 25
+  contour_area: 30
+
+# Stream configuration for re-streaming with actual RTSP paths
+go2rtc:
+  streams:
+    oliver_fabrication: "rtsp://admin:D34D8YT3@192.168.50.51:554/live/1jfiegbscbeha_p3_OTUJPAVVDCFG"
+    oliver_technology: "rtsp://admin:D34D8YT3@192.168.50.214:554/live/1jfiegbscbbha_p3_RFSHKHSUVILT"
+    oliver_motorcycle: "rtsp://admin:D34D8YT3@192.168.50.222:554/live/1jfiegbsb4wdq_p3_RSHJBMDGRXXE"
+    oliver_toolsupply: "rtsp://admin:D34D8YT3@192.168.50.248:554/live/1jfiegbscbbma_p3_UTYHNEAWUNTC"
+
+# Configure snapshots for Oliver's AI analysis
+snapshots:
+  enabled: true
+  timestamp: false
+  bounding_box: true
+  crop: false
+  quality: 70
+  height: 270
+  required_zones: []
+  
+# Global record configuration for Oliver's memory
+record:
+  enabled: true
+  retain:
+    days: 7
+    mode: motion

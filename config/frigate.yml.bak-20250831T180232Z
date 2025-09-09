@@ -1,0 +1,174 @@
+mqtt:
+  enabled: false
+database:
+  path: /media/frigate/frigate.db
+ffmpeg:
+  hwaccel_args: preset-nvidia-h264
+cameras:
+  oliver_fabrication:
+    ffmpeg:
+      inputs:
+      - path: rtsp://admin:D34D8YT3@rtsp://192.168.50.51:554/live/1jfiegbscbeha_p3_OTUJPAVVDCFG
+        roles:
+        - detect
+      - path: rtsp://admin:D34D8YT3@rtsp://192.168.50.51:554/live/1jfiegbscbeha_p0_SHMDASSBDPYP
+        roles:
+        - record
+      input_args: preset-rtsp-restream
+      output_args:
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
+          1 -strftime 1 -c copy -an
+    detect:
+      width: 640
+      height: 360
+      fps: 5
+    record:
+      enabled: true
+      retain:
+        days: 30
+        mode: motion
+    objects:
+      track:
+      - person
+      - car
+      - truck
+      filters:
+        person:
+          min_area: 1000
+          threshold: 0.7
+    onvif:
+      host: 192.168.50.51
+      port: 80
+      user: admin
+      password: D34D8YT3
+  oliver_technology:
+    ffmpeg:
+      inputs:
+      - path: rtsp://admin:D34D8YT3@rtsp://192.168.50.214:554/live/1jfiegbscbbha_p3_YJVHYGXIZZZD
+        roles:
+        - detect
+      - path: rtsp://admin:D34D8YT3@rtsp://192.168.50.214:554/live/1jfiegbscbbha_p0_EZADRBAQVGMF
+        roles:
+        - record
+      input_args: preset-rtsp-restream
+      output_args:
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
+          1 -strftime 1 -c copy -an
+    detect:
+      width: 640
+      height: 360
+      fps: 5
+    record:
+      enabled: true
+      retain:
+        days: 30
+        mode: motion
+    objects:
+      track:
+      - person
+      - car
+      - bicycle
+    onvif:
+      host: 192.168.50.214
+      port: 80
+      user: admin
+      password: D34D8YT3
+  oliver_motorcycle:
+    ffmpeg:
+      inputs:
+      - path: rtsp://admin:D34D8YT3@rtsp://192.168.50.222:554/live/1jfiegbsb4wdq_p3_RSHJBMDGRXXE
+        roles:
+        - detect
+      - path: rtsp://admin:D34D8YT3@rtsp://192.168.50.222:554/live/1jfiegbsb4wdq_p0_BZXPFESFWRQI
+        roles:
+        - record
+      input_args: preset-rtsp-restream
+      output_args:
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
+          1 -strftime 1 -c copy -an
+    detect:
+      width: 640
+      height: 360
+      fps: 5
+    record:
+      enabled: true
+      retain:
+        days: 30
+        mode: motion
+    objects:
+      track:
+      - person
+      - car
+      - bicycle
+      - motorcycle
+    onvif:
+      host: 192.168.50.222
+      port: 80
+      user: admin
+      password: D34D8YT3
+  oliver_toolsupply:
+    ffmpeg:
+      inputs:
+      - path: rtsp://admin:D34D8YT3@rtsp://192.168.50.248:554/live/1jfiegbscbbma_p3_TWDXHVIKKSUL
+        roles:
+        - detect
+      - path: rtsp://admin:D34D8YT3@rtsp://192.168.50.248:554/live/1jfiegbscbbma_p0_MFRFGYROTRSL
+        roles:
+        - record
+      input_args: preset-rtsp-restream
+      output_args:
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
+          1 -strftime 1 -c copy -an
+    detect:
+      width: 640
+      height: 360
+      fps: 5
+    record:
+      enabled: true
+      retain:
+        days: 30
+        mode: motion
+    objects:
+      track:
+      - person
+      - car
+      - bicycle
+    onvif:
+      host: 192.168.50.248
+      port: 80
+      user: admin
+      password: D34D8YT3
+detectors:
+  ov:
+    type: openvino
+    device: AUTO
+model:
+  path: /openvino-model/ssdlite_mobilenet_v2.xml
+  input_tensor: nhwc
+  input_pixel_format: bgr
+  width: 300
+  height: 300
+motion:
+  mask: ''
+  improve_contrast: true
+  threshold: 25
+  contour_area: 30
+go2rtc:
+  streams: null
+  oliver_fabrication: rtsp://admin:D34D8YT3@192.168.50.51:554/live/1jfiegbscbeha_p3_OTUJPAVVDCFG
+  oliver_technology: rtsp://admin:D34D8YT3@192.168.50.214:554/live/1jfiegbscbbha_p0_EZADRBAQVGMF
+  oliver_motorcycle: rtsp://admin:D34D8YT3@192.168.50.222:554/live/1jfiegbsb4wdq_p3_RSHJBMDGRXXE
+  oliver_toolsupply: rtsp://admin:D34D8YT3@192.168.50.248:554/live/1jfiegbscbbma_p3_TWDXHVIKKSUL
+snapshots:
+  enabled: true
+  timestamp: false
+  bounding_box: true
+  crop: false
+  quality: 70
+  height: 270
+  required_zones: []
+record:
+  enabled: true
+  retain:
+    days: 7
+    mode: motion

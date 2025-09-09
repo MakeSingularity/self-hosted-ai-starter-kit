@@ -1,0 +1,42 @@
+{
+  "test_time": "2025-08-31 09:25:33",
+  "results": {
+    "oliver_fabrication": {
+      "camera": "oliver_fabrication",
+      "ip": "192.168.50.51",
+      "basic_connectivity": true,
+      "working_urls": [],
+      "tested_urls": 38,
+      "best_url": null
+    },
+    "oliver_technology": {
+      "camera": "oliver_technology",
+      "ip": "192.168.50.214",
+      "basic_connectivity": true,
+      "working_urls": [],
+      "tested_urls": 38,
+      "best_url": null
+    },
+    "oliver_motorcycle": {
+      "camera": "oliver_motorcycle",
+      "ip": "192.168.50.222",
+      "basic_connectivity": true,
+      "working_urls": [],
+      "tested_urls": 38,
+      "best_url": null
+    },
+    "oliver_toolsupply": {
+      "camera": "oliver_toolsupply",
+      "ip": "192.168.50.248",
+      "basic_connectivity": true,
+      "working_urls": [],
+      "tested_urls": 38,
+      "best_url": null
+    }
+  },
+  "summary": {
+    "total": 4,
+    "working": 0,
+    "failed": 4
+  }
+}

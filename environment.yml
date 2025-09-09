@@ -1,0 +1,30 @@
+# Reproducible GPU-first Conda environment for the project
+# Adjust `pytorch` / `pytorch-cuda` version to match your local CUDA drivers if needed.
+
+name: oliver
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - llvmlite
+  - numba
+  - pyyaml
+  - pip:
+    - -r requirements.txt
+
+  # GPU-enabled PyTorch (pinned to a tested version) - change pytorch/pytorch-cuda versions
+  # to match your CUDA drivers. Example below targets CUDA 12.1 (pytorch-cuda=12.1).
+  - pytorch=2.8.0
+  - pytorch-cuda=12.1
+  - torchaudio=2.8.0
+
+# Notes:
+# - The `pip: -r requirements.txt` line installs project pip deps after conda packages.
+# - If you need CPU-only, remove the `pytorch-cuda` line and replace `pytorch` with a CPU build
+#   or install via pip. For reproducibility, prefer conda channel installs for PyTorch.
